@@ -369,7 +369,7 @@
         </graphicData>
         <comps>
             <li Class="CompProperties_Explosive">
-                <explosiveRadius>6.5</explosiveRadius>
+                <explosiveRadius>12</explosiveRadius>
                 <explosiveDamageType>Flame</explosiveDamageType>
                 <chanceToStartFire>1</chanceToStartFire>
                 <postExplosionGasType>ToxGas</postExplosionGasType>
@@ -390,7 +390,7 @@
         </recipeMaker>
         <modExtensions>
             <li Class="AirstrikeMod.WhitePhosphorusModExtension">
-                <fragmentCount>14</fragmentCount>
+                <fragmentCount>26</fragmentCount>
             </li>
         </modExtensions>
     </ThingDef>
@@ -633,7 +633,7 @@
             <damageDef>Flame</damageDef>
             <damageAmountBase>25</damageAmountBase>
             <speed>30</speed>
-            <explosionRadius>6.5</explosionRadius>
+            <explosionRadius>12</explosionRadius>
             <explosionChanceToStartFire>1</explosionChanceToStartFire>
             <!-- Tox fumes (harmful with Biotech active). -->
             <postExplosionGasType>ToxGas</postExplosionGasType>
@@ -646,7 +646,7 @@
         </projectile>
         <modExtensions>
             <li Class="AirstrikeMod.WhitePhosphorusModExtension">
-                <fragmentCount>18</fragmentCount>
+                <fragmentCount>32</fragmentCount>
             </li>
         </modExtensions>
     </ThingDef>
