@@ -59,6 +59,8 @@ namespace AirstrikeMod
 
         public bool inPlaceMode;
         public int hoverLandingTicks = 90;
+        public bool loiterAfter;
+        public float loiterFuelMultiplier = 1f;
 
         public int totalTicks = 240;
         public float visualAltitude = 6f;
@@ -885,6 +887,8 @@ namespace AirstrikeMod
         // Same-map: spawn a VehicleSkyfaller_Arriving directly. No return world-flight.
         private void ExitMapSameMap(Map map)
         {
+            if (inPlaceMode && loiterAfter && TryEnterLoiter(map)) return;
+
             ThingDef arrivingDef;
             Rot4 landingRot;
             if (inPlaceMode)
@@ -917,6 +921,26 @@ namespace AirstrikeMod
             Destroy();
             vehicle.SetSustainerTarget(arriving);
             vehicle.EventRegistry[VehicleEventDefOf.AerialVehicleLanding].ExecuteEvents();
+        }
+
+        // Hand the vehicle to a hovering loiter skyfaller at the end of the run.
+        private bool TryEnterLoiter(Map map)
+        {
+            var def = AirstrikeDefOf.ROCKET_Loiter;
+            if (def == null) return false;
+            var cell = GroundPos.ToIntVec3();
+            if (!cell.InBounds(map)) cell = Position;
+            var loiter = (VehicleSkyfaller_Loiter)VehicleSkyfallerMaker.MakeSkyfaller(def, vehicle);
+            loiter.returnCell = returnCell;
+            loiter.returnRot = returnRot;
+            loiter.visualAltitude = visualAltitude;
+            loiter.hoverLandingTicks = hoverLandingTicks;
+            loiter.fuelMultiplier = loiterFuelMultiplier;
+            GenSpawn.Spawn(loiter, cell, map, Rotation);
+            Destroy();
+            vehicle.SetSustainerTarget(loiter);
+            loiter.Notify_EnteredLoiter();
+            return true;
         }
 
         // Cross-map: build a fresh AerialVehicleInFlight bound for the origin tile.
@@ -979,6 +1003,8 @@ namespace AirstrikeMod
             Scribe_Collections.Look(ref bombFired, nameof(bombFired), LookMode.Value);
             Scribe_Values.Look(ref inPlaceMode, nameof(inPlaceMode));
             Scribe_Values.Look(ref hoverLandingTicks, nameof(hoverLandingTicks), 90);
+            Scribe_Values.Look(ref loiterAfter, nameof(loiterAfter));
+            Scribe_Values.Look(ref loiterFuelMultiplier, nameof(loiterFuelMultiplier), 1f);
         }
     }
 

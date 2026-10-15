@@ -396,6 +396,10 @@
 				<spreadCells>1</spreadCells>
 				<skillScatter>2</skillScatter>
 				<inPlaceSortie>true</inPlaceSortie>
+				<!-- Stay airborne after a strafing run until ordered to land. -->
+				<loiterAfterSortie>true</loiterAfterSortie>
+				<!-- 8x driving consumption: a full 300 tank hovers for ~21 in-game hours. -->
+				<loiterFuelMultiplier>8</loiterFuelMultiplier>
 				<weapons>
 					<li>
 						<label>missiles</label>

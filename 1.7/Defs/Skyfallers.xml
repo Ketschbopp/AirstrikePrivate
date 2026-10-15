@@ -16,6 +16,16 @@
         <thingClass>AirstrikeMod.VehicleSkyfaller_HoverLanding</thingClass>
     </ThingDef>
     
+    <!-- VTOL hovering on station between sorties. Selectable so the player can re-task
+         or land it (click the aircraft's shadow / ground cell). -->
+    <ThingDef ParentName="VehicleSkyfallerBase">
+        <defName>ROCKET_Loiter</defName>
+        <label>airborne aircraft</label>
+        <thingClass>AirstrikeMod.VehicleSkyfaller_Loiter</thingClass>
+        <selectable>true</selectable>
+        <neverMultiSelect>true</neverMultiSelect>
+    </ThingDef>
+
     <ThingDef>
         <defName>ROCKET_FallingBomb</defName>
         <label>falling bomb</label>

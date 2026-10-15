@@ -54,6 +54,8 @@ namespace AirstrikeMod
         public int hoverApproachCells = 5;
         public int hoverTakeoffTicks = 90;
         public int hoverLandingTicks = 90;
+        public bool loiterAfter;
+        public float loiterFuelMultiplier = 1f;
 
         public override bool DestroyOnArrival => false;
 
@@ -88,7 +90,9 @@ namespace AirstrikeMod
             Rot4? inPlaceForward = null,
             int hoverApproachCells = 5,
             int hoverTakeoffTicks = 90,
-            int hoverLandingTicks = 90)
+            int hoverLandingTicks = 90,
+            bool loiterAfter = false,
+            float loiterFuelMultiplier = 1f)
             : base(vehicle)
         {
             this.mapParent = mapParent;
@@ -117,6 +121,8 @@ namespace AirstrikeMod
             this.hoverApproachCells = hoverApproachCells;
             this.hoverTakeoffTicks = hoverTakeoffTicks;
             this.hoverLandingTicks = hoverLandingTicks;
+            this.loiterAfter = loiterAfter;
+            this.loiterFuelMultiplier = loiterFuelMultiplier;
         }
 
         public override void Arrived(GlobalTargetInfo target)
@@ -191,6 +197,8 @@ namespace AirstrikeMod
             skyfaller.strafingRunWidth = strafingRunWidth;
             skyfaller.inPlaceMode = inPlaceAnchor.HasValue;
             skyfaller.hoverLandingTicks = hoverLandingTicks;
+            skyfaller.loiterAfter = loiterAfter && inPlaceAnchor.HasValue;
+            skyfaller.loiterFuelMultiplier = loiterFuelMultiplier;
 
             IntVec3 spawnCell;
             Rot4 spawnRot;
@@ -203,7 +211,7 @@ namespace AirstrikeMod
             if (splineEligible)
             {
                 BuildPolyline(map, segments, inPlaceAnchor, inPlaceForward, hoverApproachCells,
-                    out var waypoints, out var waypointIsDrop);
+                    loiterAfter, out var waypoints, out var waypointIsDrop);
                 skyfaller.waypoints = waypoints;
                 skyfaller.waypointIsDrop = waypointIsDrop;
                 skyfaller.traveled = 0f;
@@ -234,7 +242,7 @@ namespace AirstrikeMod
         private const int POLYLINE_EDGE_MARGIN = 1;
 
         private static void BuildPolyline(Map map, List<BombingSegment> segments,
-            IntVec3? inPlaceAnchor, Rot4? inPlaceForward, int hoverApproachCells,
+            IntVec3? inPlaceAnchor, Rot4? inPlaceForward, int hoverApproachCells, bool loiterAfter,
             out List<IntVec3> waypoints, out List<bool> waypointIsDrop)
         {
             waypoints = new List<IntVec3>();
@@ -274,6 +282,24 @@ namespace AirstrikeMod
                 {
                     waypoints.Add(inner[i]);
                     waypointIsDrop.Add(true);
+                }
+                if (loiterAfter)
+                {
+                    // Stay on station: overshoot the last target and hover there instead
+                    // of flying home.
+                    var last = inner[inner.Count - 1];
+                    var prev = inner.Count >= 2 ? inner[inner.Count - 2] : forwardNode;
+                    var dir = (last - prev).ToVector3();
+                    if (dir.sqrMagnitude < 0.01f) dir = fwd.ToVector3();
+                    dir.Normalize();
+                    var overshoot = new IntVec3(
+                        Mathf.Clamp(Mathf.RoundToInt(last.x + dir.x * n), 1, map.Size.x - 2),
+                        0,
+                        Mathf.Clamp(Mathf.RoundToInt(last.z + dir.z * n), 1, map.Size.z - 2));
+                    if (overshoot == last)
+                        overshoot = new IntVec3(Mathf.Clamp(last.x + 1, 1, map.Size.x - 2), 0, last.z);
+                    waypoints.Add(overshoot); waypointIsDrop.Add(false);
+                    return;
                 }
                 waypoints.Add(behindNode); waypointIsDrop.Add(false);
                 waypoints.Add(anchor); waypointIsDrop.Add(false);
@@ -397,6 +423,8 @@ namespace AirstrikeMod
             Scribe_Values.Look(ref hoverApproachCells, nameof(hoverApproachCells), 5);
             Scribe_Values.Look(ref hoverTakeoffTicks, nameof(hoverTakeoffTicks), 90);
             Scribe_Values.Look(ref hoverLandingTicks, nameof(hoverLandingTicks), 90);
+            Scribe_Values.Look(ref loiterAfter, nameof(loiterAfter));
+            Scribe_Values.Look(ref loiterFuelMultiplier, nameof(loiterFuelMultiplier), 1f);
         }
     }
 }
