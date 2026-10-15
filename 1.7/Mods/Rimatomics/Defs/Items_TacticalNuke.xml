@@ -5,12 +5,13 @@
          Built around Rimatomics' FissionWarhead. Rimatomics detonates an armed warhead as
          a Yield-55 NuclearStrike: everything within 25 cells is vaporised, roofs are
          stripped to 55 cells, then a 55-radius Bomb_PlasmaToroid blast deals 600 damage
-         with 100 armor penetration. This bomb is 15% of that (radius and damage), plus an
+         with 100 armor penetration. This bomb is scaled down to a 30-cell blast radius
+         (30 / 55 = ~54.5% of the warhead, applied to radius and damage alike), plus an
          EMP pulse over the blast radius:
 
-             blast radius   55   -> 8.25        damage    600 -> 90
-             vaporise core  25   -> 3.75        armor pen 100 -> 15
-             roof strip     55   -> 8.25        cloud     1.2 -> 0.18 scale
+             blast radius   55   -> 30          damage    600 -> 327
+             vaporise core  25   -> 13.6        armor pen 100 -> 54.5
+             roof strip     55   -> 30          cloud     1.2 -> 0.65 scale
 
          No CompExplosive: like the Rimatomics warhead, it does not cook off when shot. -->
     <ThingDef ParentName="BombBase">
@@ -65,10 +66,10 @@
         <thingClass>Projectile_Explosive</thingClass>
         <projectile>
             <damageDef>Bomb_PlasmaToroid</damageDef>
-            <damageAmountBase>90</damageAmountBase>
-            <armorPenetrationBase>15</armorPenetrationBase>
+            <damageAmountBase>327</damageAmountBase>
+            <armorPenetrationBase>54.5</armorPenetrationBase>
             <speed>30</speed>
-            <explosionRadius>8.25</explosionRadius>
+            <explosionRadius>30</explosionRadius>
             <explosionChanceToStartFire>1</explosionChanceToStartFire>
             <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
             <postExplosionSpawnThingDef>Filth_Ash</postExplosionSpawnThingDef>
@@ -80,15 +81,15 @@
             <soundAmbient>MortarRound_Ambient</soundAmbient>
             <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
             <explosionEffect>GiantExplosion</explosionEffect>
-            <screenShakeFactor>0.3</screenShakeFactor>
+            <screenShakeFactor>0.6</screenShakeFactor>
         </projectile>
         <modExtensions>
             <li Class="AirstrikeMod.NuclearDetonationModExtension">
-                <vaporizeRadius>3.75</vaporizeRadius>
-                <roofStripRadius>8.25</roofStripRadius>
+                <vaporizeRadius>13.6</vaporizeRadius>
+                <roofStripRadius>30</roofStripRadius>
                 <detonationSound>nuclearBlastInMap</detonationSound>
                 <cloudMote>Mote_NukeCloud</cloudMote>
-                <cloudScale>0.18</cloudScale>
+                <cloudScale>0.65</cloudScale>
             </li>
             <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
                 <explosions>
