@@ -10,7 +10,7 @@ A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfile
 - **Bombing Run** - a line of bombs along a rotatable rectangle. Spacing is driven by the selected bomb's explosion radius.
 - **Strafing Run** - fire down a long, thin rectangle. Uses its own ammo, not the bomb pool. The Falcon, Kraken and Apache can switch strafing weapon in the **Payload** tab:
   - **Cannon** - autocannon rounds (steel by default).
-  - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but the blast only covers the impact cell. Fewer shots per run (10 on jets, 6 on the Apache).
+  - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but a small blast covering only the 3x3 cells around the impact. Fewer shots per run (10 on jets, 6 on the Apache).
 
 Each mode is a separate gizmo on the vehicle. A fourth **Select ordinance** gizmo picks which shell/bomb type the Precision and Bombing Run gizmos drop.
 
