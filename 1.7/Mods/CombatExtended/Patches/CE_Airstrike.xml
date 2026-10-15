@@ -182,7 +182,7 @@
         </value>
     </Operation>
     <Operation Class="PatchOperationAdd">
-        <xpath>Defs/ThingDef[defName="ROCKET_StrafingMissile"]/statBases</xpath>
+        <xpath>Defs/ThingDef[defName="ROCKET_StrafingMissile" or defName="ROCKET_SeekerMissile"]/statBases</xpath>
         <value>
             <Bulk>4</Bulk>
         </value>

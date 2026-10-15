@@ -11,7 +11,7 @@ ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 S = 4  # supersample
 
 
-def missile(size=128):
+def missile(size=128, band=(200, 40, 30, 255), seeker=False):
     n = size * S
     im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
@@ -36,8 +36,13 @@ def missile(size=128):
     d.polygon([(cx - w, top + n * 0.14), (cx, top), (cx + w, top + n * 0.14)],
               fill=(70, 70, 70, 255), outline=black)
     d.line([(cx - w, top + n * 0.14), (cx, top), (cx + w, top + n * 0.14)], fill=black, width=ol)
-    # red warhead band + highlight
-    d.rectangle([cx - w + ol, top + n * 0.18, cx + w - ol, top + n * 0.22], fill=(200, 40, 30, 255))
+    # warhead band + highlight
+    d.rectangle([cx - w + ol, top + n * 0.18, cx + w - ol, top + n * 0.22], fill=band)
+    if seeker:
+        # glass seeker dome over the nose
+        d.ellipse([cx - w * 0.85, top + n * 0.015, cx + w * 0.85, top + n * 0.16],
+                  fill=(70, 110, 140, 255), outline=black, width=ol // 2)
+        d.ellipse([cx - w * 0.45, top + n * 0.04, cx - w * 0.05, top + n * 0.09], fill=(190, 225, 245, 255))
     d.line([(cx - w * 0.35, top + n * 0.26), (cx - w * 0.35, bot - n * 0.06)],
            fill=(225, 228, 220, 255), width=int(ol * 0.8))
     # nozzle
@@ -59,9 +64,9 @@ def flame(w=64, h=256):
     return im.resize((w, h), Image.LANCZOS)
 
 
-def icon(size=128):
+def icon(size=128, **kw):
     """Cargo item: two missiles lying diagonally."""
-    m = missile(size)
+    m = missile(size, **kw)
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     for dx in (-14, 12):
         r = m.rotate(-45, resample=Image.BICUBIC, expand=False)
@@ -76,4 +81,8 @@ flame().save(proj / "ROCKET_MissileFlame.png", optimize=True)
 item = ROOT / "Textures/Things/Item/Resource/Missile"
 item.mkdir(parents=True, exist_ok=True)
 icon().save(item / "StrafingMissile.png", optimize=True)
+# Seeker missile: yellow band and a glass seeker-head dome.
+seek = dict(band=(240, 200, 30, 255), seeker=True)
+missile(**seek).save(proj / "ROCKET_SeekerMissile.png", optimize=True)
+icon(**seek).save(item / "SeekerMissile.png", optimize=True)
 print("wrote missile textures")

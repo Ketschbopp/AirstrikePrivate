@@ -414,6 +414,53 @@
         </modExtensions>
     </ThingDef>
 
+    <!-- Ammo for the seeker-missile strafing weapon. -->
+    <ThingDef ParentName="ResourceBase">
+        <defName>ROCKET_SeekerMissile</defName>
+        <label>seeker missile</label>
+        <description>An air-to-ground missile with an imaging seeker head. Fired during strafing runs, it locks onto the nearest hostile vehicle around its aim point and steers itself into it, even if the vehicle moves. Salvos spread out across different vehicles. With no vehicle to lock onto it flies like an ordinary missile. Its shaped-charge warhead is devastating against vehicles, but the blast only covers the cells right around the impact.</description>
+        <soundInteract>Metal_Drop</soundInteract>
+        <soundDrop>Standard_Drop</soundDrop>
+        <stackLimit>25</stackLimit>
+        <techLevel>Industrial</techLevel>
+        <statBases>
+            <MaxHitPoints>60</MaxHitPoints>
+            <MarketValue>90</MarketValue>
+            <Mass>3</Mass>
+            <Flammability>0.5</Flammability>
+            <DeteriorationRate>0</DeteriorationRate>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Missile/SeekerMissile</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+        </graphicData>
+        <thingCategories>
+            <li>ROCKET_Bombs</li>
+        </thingCategories>
+        <costList>
+            <Steel>15</Steel>
+            <Chemfuel>8</Chemfuel>
+            <ComponentIndustrial>2</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+            <effectWorking>Cook</effectWorking>
+            <soundWorking>Recipe_Machining</soundWorking>
+            <workAmount>1400</workAmount>
+            <productCount>2</productCount>
+            <targetCountAdjustment>10</targetCountAdjustment>
+            <workSkill>Crafting</workSkill>
+            <recipeUsers>
+                <li>TableMachining</li>
+            </recipeUsers>
+            <skillRequirements>
+                <Crafting>7</Crafting>
+            </skillRequirements>
+            <researchPrerequisite>MicroelectronicsBasics</researchPrerequisite>
+            <displayPriority>96</displayPriority>
+        </recipeMaker>
+    </ThingDef>
+
     <ThingDef ParentName="BaseBullet">
         <defName>ROCKET_Bullet_Bomb_Explosive</defName>
         <label>explosive bomb</label>
@@ -714,6 +761,45 @@
         <drawerType>RealtimeOnly</drawerType>
         <useHitPoints>false</useHitPoints>
         <selectable>false</selectable>
+    </ThingDef>
+
+    <!-- Seeker missile: as the strafing missile, plus it locks onto a hostile Vehicle
+         Framework vehicle near its aim point and steers into it
+         (AirstrikeMod.Projectile_AirstrikeSeekerMissile). Slower so the turns read. -->
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_SeekerMissile</defName>
+        <label>seeker missile</label>
+        <description>Seeker missiles. Each locks onto a hostile vehicle near where it is aimed and steers into it; salvos spread across different vehicles. Very heavy armor penetration and quadruple damage against vehicles, with a small blast around the impact.</description>
+        <graphicData>
+            <texPath>Things/Projectile/ROCKET_SeekerMissile</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>Transparent</shaderType>
+            <drawSize>1.3</drawSize>
+        </graphicData>
+        <thingClass>AirstrikeMod.Projectile_AirstrikeSeekerMissile</thingClass>
+        <projectile>
+            <damageDef>Bomb</damageDef>
+            <damageAmountBase>90</damageAmountBase>
+            <armorPenetrationBase>2.0</armorPenetrationBase>
+            <stoppingPower>3</stoppingPower>
+            <speed>28</speed>
+            <explosionRadius>1.9</explosionRadius>
+            <flyOverhead>false</flyOverhead>
+            <soundExplode>MortarBomb_Explode</soundExplode>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <screenShakeFactor>0.05</screenShakeFactor>
+        </projectile>
+        <modExtensions>
+            <li Class="Vehicles.VehicleDamageMultiplierDefModExtension">
+                <multiplier>4</multiplier>
+            </li>
+            <li Class="AirstrikeMod.SeekerMissileModExtension">
+                <seekRadius>18</seekRadius>
+                <turnRateDegPerTick>7</turnRateDegPerTick>
+                <retargetInterval>3</retargetInterval>
+                <terminalDistance>2.5</terminalDistance>
+            </li>
+        </modExtensions>
     </ThingDef>
 
 </Defs>

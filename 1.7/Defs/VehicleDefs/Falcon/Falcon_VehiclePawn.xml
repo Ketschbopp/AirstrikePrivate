@@ -421,6 +421,18 @@
 						<fireOriginOffset>6</fireOriginOffset>
 						<fireSound>InfernoCannon_Fire</fireSound>
 					</li>
+					<li>
+						<label>seeker missiles</label>
+						<projectileDef>ROCKET_Bullet_SeekerMissile</projectileDef>
+						<ammoDef>ROCKET_SeekerMissile</ammoDef>
+						<ammoPerRound>1</ammoPerRound>
+						<bulletsPerRound>1</bulletsPerRound>
+						<spreadCells>0</spreadCells>
+						<runLength>8</runLength>
+						<runWidth>1</runWidth>
+						<fireOriginOffset>6</fireOriginOffset>
+						<fireSound>InfernoCannon_Fire</fireSound>
+					</li>
 				</weapons>
 			</li>
 			<li Class="Vehicles.CompProperties_FueledTravel">
