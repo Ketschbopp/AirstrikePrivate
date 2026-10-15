@@ -15,14 +15,15 @@ namespace AirstrikeMod
         {
             var map = Map;
             var pos = Position;
-            var pp = ordinance?.projectileWhenLoaded?.projectile;
+            var projDef = CECompat.ProjectileFor(ordinance);
+            var pp = projDef?.projectile;
             if (pp == null || !pos.InBounds(map))
             {
                 Destroy();
                 return;
             }
 
-            ExplosionFx.Trigger(ordinance.projectileWhenLoaded, pp, pos, map, caster);
+            ExplosionFx.Trigger(projDef, pp, pos, map, caster);
             Destroy();
         }
 

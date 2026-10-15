@@ -699,7 +699,7 @@ namespace AirstrikeMod
             var impactCell = ApplyScatter(cell);
 
             var def = FallingBombDef;
-            var projectileDef = ordinance.projectileWhenLoaded;
+            var projectileDef = CECompat.ProjectileFor(ordinance);
             if (def == null || projectileDef == null)
             {
                 DetonateInline(impactCell);
@@ -742,7 +742,21 @@ namespace AirstrikeMod
                 var origin = originCell.ToVector3Shifted();
                 origin.y = AltitudeLayer.Projectile.AltitudeFor();
 
-                var projectile = (Projectile)GenSpawn.Spawn(strafingProjectileDef, originCell, Map);
+                // Combat Extended bullets aren't vanilla Projectiles: fire them through CE,
+                // from above (the skyfaller is the spawned shooter; the vehicle isn't).
+                if (CECompat.IsCEProjectile(strafingProjectileDef))
+                {
+                    CECompat.TryLaunch(strafingProjectileDef, origin, intendedTarget, this,
+                        Mathf.Max(2f, visualAltitude));
+                    continue;
+                }
+
+                if (GenSpawn.Spawn(strafingProjectileDef, originCell, Map) is not Projectile projectile)
+                {
+                    Log.ErrorOnce($"[Rockets.Airstrike] Strafing projectile {strafingProjectileDef.defName} is not a projectile.",
+                        strafingProjectileDef.shortHash ^ 0x5f3a);
+                    continue;
+                }
                 projectile.Launch(
                     launcher: vehicle,
                     origin: origin,
@@ -845,9 +859,8 @@ namespace AirstrikeMod
         /// </summary>
         private void DetonateInline(IntVec3 cell)
         {
-            ExplosionFx.Trigger(ordinance?.projectileWhenLoaded,
-                ordinance?.projectileWhenLoaded?.projectile,
-                cell, Map, vehicle);
+            var projDef = CECompat.ProjectileFor(ordinance);
+            ExplosionFx.Trigger(projDef, projDef?.projectile, cell, Map, vehicle);
         }
 
         /// <summary>

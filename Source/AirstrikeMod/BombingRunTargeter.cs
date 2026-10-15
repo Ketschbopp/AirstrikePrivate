@@ -288,7 +288,7 @@ namespace AirstrikeMod
 
         private int Spacing(ThingDef ord)
         {
-            var radius = ord?.projectileWhenLoaded?.projectile?.explosionRadius ?? 0f;
+            var radius = CECompat.ProjectileFor(ord)?.projectile?.explosionRadius ?? 0f;
             return Mathf.Max(1, Mathf.FloorToInt(radius * spacingMultiplier));
         }
 

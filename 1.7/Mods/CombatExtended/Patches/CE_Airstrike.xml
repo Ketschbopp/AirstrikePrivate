@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+    <!-- Only loaded with Combat Extended (see LoadFolders.xml). -->
+
+    <!-- ===================== Strafing: CE 20x102mm AP-HE cannon ===================== -->
+    <!-- CE uses 20x102mm NATO for the vanilla autocannon turret; strafing fires the AP-HE
+         round and consumes one CE cartridge per bullet. Missiles use the CE missile. -->
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Apache"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]/projectileDef</xpath>
+        <value>
+            <projectileDef>Bullet_20x102mmNATO_HE</projectileDef>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Apache"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]/ammoDef</xpath>
+        <value>
+            <ammoDef>Ammo_20x102mmNATO_HE</ammoDef>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]</xpath>
+        <value>
+            <ammoPerRound>4</ammoPerRound>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Apache"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]</xpath>
+        <value>
+            <ammoPerRound>3</ammoPerRound>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Apache"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]/weapons/li[projectileDef="ROCKET_Bullet_StrafingMissile"]/projectileDef</xpath>
+        <value>
+            <projectileDef>ROCKET_Bullet_StrafingMissile_CE</projectileDef>
+        </value>
+    </Operation>
+
+    <!-- Vanilla Vehicles Expanded Warbird (strafing added by this mod's VVE patch). -->
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Vanilla Vehicles Expanded</li>
+        </mods>
+        <match Class="PatchOperationSequence">
+            <operations>
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/Vehicles.VehicleDef[defName="VVE_Warbird"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]/projectileDef</xpath>
+                    <value>
+                        <projectileDef>Bullet_20x102mmNATO_HE</projectileDef>
+                    </value>
+                </li>
+                <li Class="PatchOperationReplace">
+                    <success>Always</success>
+                    <xpath>Defs/Vehicles.VehicleDef[defName="VVE_Warbird"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikeStrafingRun"]/ammoDef</xpath>
+                    <value>
+                        <ammoDef>Ammo_20x102mmNATO_HE</ammoDef>
+                    </value>
+                </li>
+            </operations>
+        </match>
+    </Operation>
+
+    <!-- ===================== Aircraft armour in CE units ===================== -->
+    <!-- CE armour is mm RHA (sharp) / MPa (blunt). Jets: thin skin that still stops
+         small-arms fragments. Apache: armoured cockpit and systems vs rifle/MG fire.
+         The Kraken inherits the Falcon's values. -->
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Spirit"]/statBases/ArmorRating_Sharp</xpath>
+        <value>
+            <ArmorRating_Sharp>6</ArmorRating_Sharp>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Spirit"]/statBases/ArmorRating_Blunt</xpath>
+        <value>
+            <ArmorRating_Blunt>12</ArmorRating_Blunt>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Apache"]/statBases/ArmorRating_Sharp</xpath>
+        <value>
+            <ArmorRating_Sharp>10</ArmorRating_Sharp>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Apache"]/statBases/ArmorRating_Blunt</xpath>
+        <value>
+            <ArmorRating_Blunt>22</ArmorRating_Blunt>
+        </value>
+    </Operation>
+
+    <!-- ===================== Bomb shrapnel ===================== -->
+    <!-- CE explosives throw physical fragments; CECompat throws these on detonation. -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bullet_Bomb_Explosive"]</xpath>
+        <value>
+            <comps>
+                <li Class="CombatExtended.CompProperties_Fragments">
+                    <fragments>
+                        <Fragment_Large>20</Fragment_Large>
+                        <Fragment_Small>35</Fragment_Small>
+                    </fragments>
+                </li>
+            </comps>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bullet_Bomb_HighExplosive" or defName="ROCKET_Bullet_Bomb_Neum"]</xpath>
+        <value>
+            <comps>
+                <li Class="CombatExtended.CompProperties_Fragments">
+                    <fragments>
+                        <Fragment_Large>30</Fragment_Large>
+                        <Fragment_Small>55</Fragment_Small>
+                    </fragments>
+                </li>
+            </comps>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bullet_Bomb_Blockbuster"]</xpath>
+        <value>
+            <comps>
+                <li Class="CombatExtended.CompProperties_Fragments">
+                    <fragments>
+                        <Fragment_Large>45</Fragment_Large>
+                        <Fragment_Small>80</Fragment_Small>
+                    </fragments>
+                </li>
+            </comps>
+        </value>
+    </Operation>
+
+    <!-- ===================== Inventory bulk ===================== -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[@Name="BombBase"]/statBases</xpath>
+        <value>
+            <Bulk>9</Bulk>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bomb_HighExplosive" or defName="ROCKET_Bomb_Neum"]/statBases</xpath>
+        <value>
+            <Bulk>18</Bulk>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bomb_Blockbuster"]/statBases</xpath>
+        <value>
+            <Bulk>26</Bulk>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_Bomb_Antigrain"]/statBases</xpath>
+        <value>
+            <Bulk>32</Bulk>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/ThingDef[defName="ROCKET_Bomb_TacticalNuke" or defName="ROCKET_Bomb_URDAM"]/statBases</xpath>
+        <value>
+            <Bulk>70</Bulk>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationAdd">
+        <xpath>Defs/ThingDef[defName="ROCKET_StrafingMissile"]/statBases</xpath>
+        <value>
+            <Bulk>4</Bulk>
+        </value>
+    </Operation>
+</Patch>

@@ -37,7 +37,7 @@ namespace AirstrikeMod
             this.vehicle = vehicle;
             this.map = map;
             this.ordinance = ordinance;
-            this.radius = ordinance?.projectileWhenLoaded?.projectile?.explosionRadius ?? 3f;
+            this.radius = CECompat.ProjectileFor(ordinance)?.projectile?.explosionRadius ?? 3f;
             this.maxChain = Mathf.Max(1, maxChain);
             this.action = action;
             this.targetValidator = targetValidator;

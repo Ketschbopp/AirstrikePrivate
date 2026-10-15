@@ -3,6 +3,8 @@
 
     <ThingDef ParentName="VehicleSkyfallerBase">
         <defName>ROCKET_BombingPass</defName>
+        <!-- Shows as the "weapon" in combat logs for CE strafing rounds. -->
+        <label>airstrike</label>
         <thingClass>AirstrikeMod.VehicleSkyfaller_Bombing</thingClass>
     </ThingDef>
 
