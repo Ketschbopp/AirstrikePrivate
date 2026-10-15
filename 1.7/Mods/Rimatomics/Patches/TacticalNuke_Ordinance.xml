@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Patch>
-    <!-- Only loaded with Rimatomics. Adds the tactical nuke to every precision strike and
+    <!-- Only loaded with Rimatomics. Adds the tactical nuke and URDAM to every precision strike and
          bombing run on the Falcon (the Kraken inherits it) and the Spirit. -->
     <Operation Class="PatchOperationAdd">
         <xpath>Defs/Vehicles.VehicleDef[defName="ROCKET_Falcon" or defName="ROCKET_Spirit"]/comps/li[@Class="AirstrikeMod.CompProperties_AirstrikePrecision" or @Class="AirstrikeMod.CompProperties_AirstrikeBombingRun"]/ordinance</xpath>
         <value>
             <li>ROCKET_Bomb_TacticalNuke</li>
+            <li>ROCKET_Bomb_URDAM</li>
         </value>
     </Operation>
 </Patch>
