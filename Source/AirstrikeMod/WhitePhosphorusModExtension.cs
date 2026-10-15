@@ -190,7 +190,8 @@ namespace AirstrikeMod
                         damAmount: damage, explosionSound: null, doSoundEffects: false);
                 // Phosphorus sticks to whoever it hits and keeps burning.
                 WhitePhosphorusHelper.Splatter(cell, map, Mathf.Max(0.4f, fireSize), damage, instigator);
-                if (ext != null && ext.burnPatchChance > 0f && Rand.Chance(ext.burnPatchChance))
+                if (ext != null && ext.burnPatchChance > 0f && (AirstrikeMod.Settings?.wpLingeringFire ?? true)
+                    && Rand.Chance(ext.burnPatchChance))
                     WhitePhosphorusHelper.SpawnPatch(ext, cell, map, instigator);
                 for (var i = 0; i < 2; i++)
                     WhitePhosphorusHelper.WhiteSmoke(end, map, Rand.Range(1.2f, 1.8f), Rand.Range(0f, 360f), Rand.Range(0.1f, 0.3f));

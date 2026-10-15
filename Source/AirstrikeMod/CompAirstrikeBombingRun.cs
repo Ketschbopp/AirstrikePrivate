@@ -61,7 +61,8 @@ namespace AirstrikeMod
                     LaunchStrike(destMap, segments, originalMap);
                 },
                 targetValidator: t => t.Cell.InBounds(destMap)
-                                      && !Ext_Vehicles.IsRoofRestricted(Vehicle.VehicleDef, t.Cell, destMap),
+                                      && (BunkerBusterHelper.IsBunkerBuster(sel)
+                                          || !Ext_Vehicles.IsRoofRestricted(Vehicle.VehicleDef, t.Cell, destMap)),
                 actionWhenFinished: () =>
                 {
                     CursorLabel.Clear();

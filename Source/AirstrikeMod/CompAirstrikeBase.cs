@@ -17,7 +17,8 @@ namespace AirstrikeMod
 
         private ThingDef selectedOrdinance;
         private bool showAllOrdinance = true;
-        private bool loiterEnabled = true;
+        // Null = follow the "helicopters stay airborne by default" setting.
+        private bool? loiterEnabled;
 
         /// <summary>The hovering skyfaller currently holding this vehicle, if any.</summary>
         public VehicleSkyfaller_Loiter Loiter => VehicleSkyfaller_Loiter.For(Vehicle);
@@ -26,7 +27,8 @@ namespace AirstrikeMod
         protected Map OriginMap => Loiter?.Map ?? Vehicle.Map;
 
         public bool CanLoiter => BaseProps.inPlaceSortie && BaseProps.loiterAfterSortie;
-        public bool LoiterEnabled => CanLoiter && loiterEnabled;
+        private bool LoiterOn => loiterEnabled ?? (AirstrikeMod.Settings?.stayAirborneByDefault ?? true);
+        public bool LoiterEnabled => CanLoiter && LoiterOn;
 
         private static readonly FieldInfo SubGraphicsField = typeof(Graphic_Collection)
             .GetField("subGraphics", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -99,18 +101,20 @@ namespace AirstrikeMod
             return Mathf.Min(floor + skillScatter * deficit, ceiling);
         }
 
+        private static float ScatterSetting => AirstrikeMod.Settings?.scatterMultiplier ?? 1f;
+
         protected float ResolveBombScatter()
         {
             return ResolveScatterFloat(
                 BaseProps.scatter, BaseProps.skillScatter,
-                BestTargetingAbility(), BaseProps.flyAltitude);
+                BestTargetingAbility(), BaseProps.flyAltitude) * ScatterSetting;
         }
 
         protected int ResolveStrafingSpread(int baseSpread)
         {
             return Mathf.RoundToInt(ResolveScatterFloat(
                 baseSpread, BaseProps.skillScatter,
-                BestTargetingAbility(), BaseProps.flyAltitude));
+                BestTargetingAbility(), BaseProps.flyAltitude) * ScatterSetting);
         }
 
         protected void SetTargetingCursor(string firstLine)
@@ -233,11 +237,19 @@ namespace AirstrikeMod
                 for (var j = 0; j < list.Count; j++)
                 {
                     var def = list[j];
-                    if (def == null) continue;
+                    if (def == null || !OrdinanceAllowed(def)) continue;
                     seen ??= new HashSet<ThingDef>();
                     if (seen.Add(def)) yield return def;
                 }
             }
+        }
+
+        /// <summary>False for nuclear ordinance when nuclear weapons are disabled in settings.</summary>
+        public static bool OrdinanceAllowed(ThingDef def)
+        {
+            if (def == null) return false;
+            if (AirstrikeMod.Settings?.allowNuclearWeapons ?? true) return true;
+            return !(CECompat.ProjectileFor(def)?.HasModExtension<NuclearDetonationModExtension>() ?? false);
         }
 
         public bool HasAvailableOrdinance()
@@ -293,7 +305,7 @@ namespace AirstrikeMod
             var sel = SelectedOrdinance;
             if (sel == null) yield break;
             var allowed = BaseProps.ordinance;
-            if (allowed != null && allowed.Contains(sel))
+            if (allowed != null && allowed.Contains(sel) && OrdinanceAllowed(sel))
                 yield return BuildStrikeGizmo();
         }
 
@@ -318,8 +330,8 @@ namespace AirstrikeMod
                 defaultLabel = "ROCKET_StayAirborne".Translate(),
                 defaultDesc = "ROCKET_StayAirborneDesc".Translate(),
                 icon = LoiterIcon,
-                isActive = () => loiterEnabled,
-                toggleAction = () => loiterEnabled = !loiterEnabled,
+                isActive = () => LoiterOn,
+                toggleAction = () => loiterEnabled = !LoiterOn,
             };
         }
 
@@ -332,7 +344,8 @@ namespace AirstrikeMod
             if (RequiresOrdinance)
             {
                 var sel = SelectedOrdinance;
-                if (sel == null || BaseProps.ordinance == null || !BaseProps.ordinance.Contains(sel))
+                if (sel == null || BaseProps.ordinance == null || !BaseProps.ordinance.Contains(sel)
+                    || !OrdinanceAllowed(sel))
                     yield break;
             }
             yield return BuildStrikeGizmo();
@@ -687,7 +700,7 @@ namespace AirstrikeMod
             // Only the primary's value is read at runtime; secondaries scribe null.
             Scribe_Defs.Look(ref selectedOrdinance, nameof(selectedOrdinance));
             Scribe_Values.Look(ref showAllOrdinance, nameof(showAllOrdinance), true);
-            Scribe_Values.Look(ref loiterEnabled, nameof(loiterEnabled), true);
+            Scribe_Values.Look(ref loiterEnabled, nameof(loiterEnabled));
         }
     }
 }

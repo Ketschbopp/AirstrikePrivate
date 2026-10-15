@@ -213,7 +213,7 @@ namespace AirstrikeMod
 
         /// <summary>Explode <paramref name="projectileDef"/> CE-style. False = not handled.</summary>
         public static bool TryExplode(ThingDef projectileDef, ProjectileProperties pp, IntVec3 pos, Map map,
-            Thing instigator)
+            Thing instigator, float damageMultiplier = 1f)
         {
             if (!Active || pp == null) return false;
             try
@@ -240,8 +240,8 @@ namespace AirstrikeMod
                 Set("radius", pp.explosionRadius);
                 Set("damType", pp.damageDef ?? DamageDefOf.Bomb);
                 Set("instigator", instigator);
-                Set("damAmount", pp.GetDamageAmount((Thing)null));
-                Set("armorPenetration", armorPen);
+                Set("damAmount", Mathf.RoundToInt(pp.GetDamageAmount((Thing)null) * damageMultiplier));
+                Set("armorPenetration", armorPen * damageMultiplier);
                 Set("explosionSound", pp.soundExplode);
                 Set("projectile", projectileDef);
                 Set("postExplosionSpawnThingDef", pp.postExplosionSpawnThingDef);

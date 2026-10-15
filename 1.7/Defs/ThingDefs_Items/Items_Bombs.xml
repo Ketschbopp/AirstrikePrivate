@@ -414,6 +414,46 @@
         </modExtensions>
     </ThingDef>
 
+    <!-- Penetrating bomb. AirstrikeMod.BunkerBusterModExtension on the projectile lets it be
+         aimed at roofed and mountain cells and punches through the roof before it detonates. -->
+    <ThingDef ParentName="MakeableBombBase">
+        <defName>ROCKET_Bomb_BunkerBuster</defName>
+        <label>bunker buster</label>
+        <description>A long, narrow penetrating bomb with a hardened steel casing and a delayed fuse. It drives through the roof - even overhead mountain - before it goes off: constructed and thin rock roofs around the impact cave in on whoever is below, overhead mountain gets a hole blasted clean through and rock walls right at the impact point are smashed. Unlike other bombs it can be aimed at roofed and mountain targets. The blast itself is smaller than a high-explosive bomb's but hits much harder. Explodes when damaged.</description>
+        <stackLimit>5</stackLimit>
+        <statBases>
+            <MarketValue>520</MarketValue>
+            <Mass>28</Mass>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/BunkerBuster</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+            <drawSize>1.25</drawSize>
+        </graphicData>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>5.9</explosiveRadius>
+                <explosiveDamageType>Bomb</explosiveDamageType>
+                <damageAmountBase>260</damageAmountBase>
+                <armorPenetrationBase>0.6</armorPenetrationBase>
+                <explosiveExpandPerStackcount>0.3</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <wickTicks>30~60</wickTicks>
+                <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_BunkerBuster</projectileWhenLoaded>
+        <costList>
+            <Shell_HighExplosive>2</Shell_HighExplosive>
+            <Steel>60</Steel>
+            <Plasteel>25</Plasteel>
+            <ComponentIndustrial>3</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <researchPrerequisite>AdvancedFabrication</researchPrerequisite>
+        </recipeMaker>
+    </ThingDef>
+
     <!-- Ammo for the seeker-missile strafing weapon. -->
     <ThingDef ParentName="ResourceBase">
         <defName>ROCKET_SeekerMissile</defName>
@@ -798,6 +838,38 @@
                 <turnRateDegPerTick>7</turnRateDegPerTick>
                 <retargetInterval>3</retargetInterval>
                 <terminalDistance>2.5</terminalDistance>
+            </li>
+        </modExtensions>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_BunkerBuster</defName>
+        <label>bunker buster</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellHighExplosive</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+            <drawSize>1.4</drawSize>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Bomb</damageDef>
+            <damageAmountBase>260</damageAmountBase>
+            <armorPenetrationBase>0.6</armorPenetrationBase>
+            <speed>30</speed>
+            <explosionRadius>5.9</explosionRadius>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>Explosion_GiantBomb</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            <screenShakeFactor>0.15</screenShakeFactor>
+        </projectile>
+        <modExtensions>
+            <li Class="AirstrikeMod.BunkerBusterModExtension">
+                <roofBreakRadius>2.9</roofBreakRadius>
+                <rockBreakRadius>1.5</rockBreakRadius>
             </li>
         </modExtensions>
     </ThingDef>
