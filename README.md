@@ -1,6 +1,6 @@
 # Rocket's Airstrike
 
-A RimWorld 1.6 mod for [Vehicle Framework](https://steamcommunity.com/sharedfiles/filedetails/?id=3014915404). Adds airstrike gizmos to flying vehicles: drop bombs on a point, carpet-bomb in a line, or strafe with cannons. The aircraft taxis, takes off, flies the strike, then returns and lands - same map or across the world.
+A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfiles/filedetails/?id=3014915404). Adds airstrike gizmos to flying vehicles: drop bombs on a point, carpet-bomb in a line, or strafe with cannons. The aircraft taxis, takes off, flies the strike, then returns and lands - same map or across the world.
 
 ## What you get in-game
 
@@ -38,17 +38,23 @@ If you have more than one map loaded, clicking a strike gizmo opens a menu to pi
 **Ships in this mod**
 
 - **Falcon** (`ROCKET_Falcon`) - jet aircraft, gated behind the Jet Aircraft research project (or Combat Vehicles when Vanilla Vehicles Expanded is loaded). Precision, Bombing Run, and Strafing Run.
+- **Kraken** (`ROCKET_Kraken`) - J-20-style canard-delta jet. Inherits every property of the Falcon (`ParentName="ROCKET_FalconBase"`), including research, cost and compat patches; only the name and art differ.
+- **Spirit** (`ROCKET_Spirit`) - stealth bomber, gated behind Stealth Aircraft. Precision and Bombing Run.
+
+The Falcon, Kraken and Spirit can drop every bomb type on both Precision Strikes and Bombing Runs. A Bombing Run still needs `dropCount` (5) bombs in cargo, so the heaviest bombs need enough cargo capacity to carry five.
 
 **Mod-gated compatibility patches** (no-op if the host mod isn't loaded)
 
 - **Vanilla Vehicles Expanded**: adds Precision + Strafing Run to the **Warbird**.
 - **LTS Ammunition (Simple Ammo Pack)**: swaps the Falcon's strafing ammo from steel to `AmmoIndustrial`.
 
-You can hand-edit `1.6/Patches/Vehicle_Patches.xml` to add the gizmos to any other aerial vehicle.
+You can hand-edit `1.7/Patches/Vehicle_Patches.xml` to add the gizmos to any other aerial vehicle.
 
 ## New items
 
 - **Explosive / High-Explosive / Incendiary / Antigrain bomb** (`ROCKET_Bomb_*`) - large air-dropped bombs, craftable at the machining table. Drop in Bombs category.
+- **Blockbuster bomb** (`ROCKET_Bomb_Blockbuster`) - bigger and heavier than the high-explosive bomb: 250 damage, 10.9 radius (HE: 150 / 7.8).
+- **Neum bomb** (`ROCKET_Bomb_Neum`) - made with uranium. Same blast as the high-explosive bomb, plus an EMP pulse and fire from the same detonation.
 - The Bombing Run and Precision Strike can also drop any vanilla mortar shell from cargo.
 
 ## Pilot records
@@ -140,6 +146,24 @@ These come from `CompProperties_AirstrikeBase`:
 | `spreadCells` | `1` | Per-bullet biaxial scatter on top of the run-width perpendicular offset. |
 | `fireOriginOffset` | `3` | Cells between bullet spawn point and its target cell (gives the bullet visible travel time). |
 
+### Multi-damage bombs: `SecondaryExplosionsModExtension`
+
+Vanilla explosions carry a single damage type. Add `AirstrikeMod.SecondaryExplosionsModExtension` to a bomb's projectile def (airstrike and mortar path) and to its item def (cook-off path) to fire extra explosions on the same cell in the same tick. The Neum bomb uses it for its EMP layer:
+
+```xml
+<modExtensions>
+    <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+        <explosions>
+            <li>
+                <damageDef>EMP</damageDef>
+                <!-- optional: radius (default = primary radius), damageAmount,
+                     armorPenetration, chanceToStartFire, explosionSound -->
+            </li>
+        </explosions>
+    </li>
+</modExtensions>
+```
+
 ### Sounds and visuals provided by the mod
 
 Reference these directly from your patches - they're shipped by Rocket's Airstrike.
@@ -168,22 +192,22 @@ If you rename or remove a `CompProperties_Airstrike*` from a vehicle after a sav
 
 ```
 About/                          Mod metadata; depends on VF + Harmony.
-1.6/
+1.7/
   Defs/
-    OrdinanceDefs.xml           Per-shell explosion-customisation defs.
     Skyfallers.xml              ROCKET_BombingPass + ROCKET_FallingBomb.
     SoundDefs.xml               Mod sounds (engine, hardpoint, beep).
     Stats/                      ROCKET_TargetingAbility (vestigial; skill-driven now).
     RecordDefs/                 Pilot record defs.
     ResearchDefs/               ROCKET_JetAircraft, ROCKET_StealthAircraft.
     ThingCategoryDefs/          Bombs category.
-    ThingDefs_Items/            HE / Incendiary / Antigrain bombs.
-    VehicleDefs/Falcon/         ROCKET_Falcon + buildable.
+    ThingDefs_Items/            Explosive / HE / Blockbuster / Incendiary / Neum / Antigrain bombs.
+    VehicleDefs/                Falcon, Kraken (inherits Falcon), Spirit, Apache + buildables.
   Patches/
     Vehicle_Patches.xml         VVE Warbird & Falcon upgrades (mod-gated).
     LTS_Ammunition_Patch.xml    LTS Ammunition compat (mod-gated).
   Assemblies/                   Shipped DLL.
 Source/AirstrikeMod/            C# source (csproj + .cs files).
+Source/Art/                     Scripts that generate the Kraken sprites and Blockbuster/Neum bomb icons.
 Languages/English/Keyed/        Translatable strings.
 Textures/                       Vehicle, item, and UI textures.
 Sounds/                         WAV files referenced by SoundDefs.
@@ -191,12 +215,12 @@ Sounds/                         WAV files referenced by SoundDefs.
 
 ## Building from source
 
-1. Open `Source/AirstrikeMod/AirstrikeMod.csproj` in Rider or Visual Studio.
-2. The csproj points at RimWorld and Vehicle Framework DLLs via `<RimWorldDir>` and `<VehicleFrameworkDir>` properties at the top - edit those if your installs aren't at the default Steam locations.
-3. Build. Output goes to `Source/Assemblies/AirstrikeMod.dll`.
-4. Copy the DLL to `1.6/Assemblies/` for release.
+1. Install the .NET 10 SDK (RimWorld 1.7 runs on .NET 10).
+2. Open `Source/AirstrikeMod/AirstrikeMod.csproj` in Rider or Visual Studio, or run `dotnet build -c Release`.
+3. RimWorld itself is referenced through the `Krafs.Rimworld.Ref` NuGet package, so no game install is needed. Vehicle Framework is referenced from `<VehicleFrameworkDir>` (its `1.7/Assemblies`) - edit that property, or pass `-p:VehicleFrameworkDir=...`, if your workshop folder isn't at the default Steam location.
+4. Output goes to `Source/Assemblies/AirstrikeMod.dll`. Copy it to `1.7/Assemblies/` for release.
 
-Target framework `net48`, language version `latest`.
+Target framework `net10.0`, language version `latest`.
 
 ## Dependencies
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Inherits everything from the Falcon (stats, components, strike comps, launch
+	     protocol, compat patches) - only the name, art and blueprint differ. -->
+	<Vehicles.VehicleDef ParentName="ROCKET_FalconBase">
+		<defName>ROCKET_Kraken</defName>
+		<label>Kraken</label>
+		<description>A stealth-shaped canard-delta fighter, the Kraken is an incredibly fast jet-powered and effective strike craft. Its long fuselage, close-coupled canards and twin canted tails give it a menacing silhouette, but under the skin it carries the same engines, ordinance load and avionics as the Falcon. With minimal cargo intended for holding ordinance and fuel, its primary purpose is to perform precision strike and bombing runs.\n\nBeing a flying vehicle, it is extremely obvious when on the move.\n\n&lt;color=#bb8f04&gt;Crew:&lt;/color&gt; Pilot x1\n&lt;color=#bb8f04&gt;Fuel type:&lt;/color&gt; Chemfuel</description>
+		<graphicData>
+			<texPath>Things/Vehicles/Kraken/Kraken</texPath>
+		</graphicData>
+		<buildDef>ROCKET_Kraken_Blueprint</buildDef>
+	</Vehicles.VehicleDef>
+</Defs>

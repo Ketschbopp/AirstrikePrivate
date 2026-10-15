@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<Vehicles.VehicleBuildDef ParentName="VehicleBaseBuildable">
+	<Vehicles.VehicleBuildDef ParentName="VehicleBaseBuildable" Name="ROCKET_FalconBlueprintBase">
 		<defName>ROCKET_Falcon_Blueprint</defName>
 		<label>Falcon</label>
 		<description>A modern fighter plane, the Falcon is an incredibly fast jet-powered and effective strike craft. With minimal cargo intended for holding ordinance and fuel, its primary purpose is to perform precision strike and bombing runs.\n\nBeing a flying vehicle, it is extremely obvious when on the move.\n\n&lt;color=#bb8f04&gt;Crew:&lt;/color&gt; Pilot x1\n&lt;color=#bb8f04&gt;Fuel type:&lt;/color&gt; Chemfuel</description>

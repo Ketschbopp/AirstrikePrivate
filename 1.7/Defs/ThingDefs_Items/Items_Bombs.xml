@@ -78,7 +78,7 @@
     <ThingDef ParentName="MakeableBombBase">
         <defName>ROCKET_Bomb_HighExplosive</defName>
         <label>high-explosive bomb</label>
-        <description>An oversized explosive bomb with the same chemistry as the standard explosive but a much larger blast radius. Heavy enough that the carrier aircraft can only drop a single one on a precision strike rather than scatter several along a line.</description>
+        <description>An oversized explosive bomb with the same chemistry as the standard explosive but a much larger blast radius. Heavy enough that a carrier aircraft can only haul a few of them at once.</description>
         <stackLimit>10</stackLimit>
         <statBases>
             <MarketValue>210</MarketValue>
@@ -144,12 +144,11 @@
     </ThingDef>
 
     <!-- Antimatter-warhead bomb. Models vanilla Shell_AntigrainWarhead with +3 radius
-         and the GiantExplosion effecter. Heavy (25kg), stacks only to 5, and
-         restricted to Single Strike via the Falcon's BombingRun list omitting it. -->
+         and the GiantExplosion effecter. Heavy (25kg) and stacks only to 5. -->
     <ThingDef ParentName="MakeableBombBase">
         <defName>ROCKET_Bomb_Antigrain</defName>
         <label>antigrain bomb</label>
-        <description>An ultra-tech aerial bomb tipped with an antimatter warhead. Detonation produces an enormous blast that levels structures and starts widespread fires. Can only be delivered by a precision strike.</description>
+        <description>An ultra-tech aerial bomb tipped with an antimatter warhead. Detonation produces an enormous blast that levels structures and starts widespread fires. Delivered by carrier aircraft on precision strikes or bombing runs.</description>
         <statBases>
             <MarketValue>900</MarketValue>
             <Mass>25</Mass>
@@ -183,6 +182,92 @@
         <recipeMaker>
             <researchPrerequisite>AdvancedFabrication</researchPrerequisite>
         </recipeMaker>
+    </ThingDef>
+
+    <!-- Heavier, larger-radius step up from the high-explosive bomb. -->
+    <ThingDef ParentName="MakeableBombBase">
+        <defName>ROCKET_Bomb_Blockbuster</defName>
+        <label>blockbuster bomb</label>
+        <description>A massive thin-cased aerial bomb packed with as much high explosive as the airframe can carry. Bigger and heavier than the high-explosive bomb, it hits harder and flattens a far wider area - enough to level a whole block of buildings. Too bulky to be fired from a mortar. Explodes when damaged.</description>
+        <stackLimit>5</stackLimit>
+        <statBases>
+            <MarketValue>380</MarketValue>
+            <Mass>20</Mass>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Blockbuster</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+            <drawSize>1.25</drawSize>
+        </graphicData>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>10.9</explosiveRadius>
+                <explosiveDamageType>Bomb</explosiveDamageType>
+                <damageAmountBase>250</damageAmountBase>
+                <armorPenetrationBase>0.35</armorPenetrationBase>
+                <explosiveExpandPerStackcount>0.4</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <wickTicks>30~60</wickTicks>
+                <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_Blockbuster</projectileWhenLoaded>
+        <costList>
+            <Shell_HighExplosive>2</Shell_HighExplosive>
+            <Chemfuel>15</Chemfuel>
+            <Steel>40</Steel>
+            <ComponentIndustrial>2</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <researchPrerequisite>Fabrication</researchPrerequisite>
+        </recipeMaker>
+    </ThingDef>
+
+    <!-- HE-bomb power plus an EMP pulse and incendiary burst from the same detonation.
+         The EMP layer comes from AirstrikeMod.SecondaryExplosionsModExtension. -->
+    <ThingDef ParentName="MakeableBombBase">
+        <defName>ROCKET_Bomb_Neum</defName>
+        <label>neum bomb</label>
+        <description>A high-explosive aerial bomb wrapped in a uranium flux-compression jacket. The blast hits as hard as a high-explosive bomb while the collapsing jacket releases a powerful electromagnetic pulse and a wave of incendiary heat, disabling mechanoids, shields and turrets and setting the area ablaze in the same instant. Too bulky to be fired from a mortar. Explodes when damaged.</description>
+        <stackLimit>10</stackLimit>
+        <statBases>
+            <MarketValue>300</MarketValue>
+            <Mass>14</Mass>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Neum</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+        </graphicData>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>7.8</explosiveRadius>
+                <explosiveDamageType>Bomb</explosiveDamageType>
+                <explosiveExpandPerStackcount>0.4</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <chanceToStartFire>0.5</chanceToStartFire>
+                <wickTicks>30~60</wickTicks>
+                <preExplosionSpawnSingleThingDef>CraterMedium</preExplosionSpawnSingleThingDef>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_Neum</projectileWhenLoaded>
+        <costList>
+            <Shell_HighExplosive>1</Shell_HighExplosive>
+            <Uranium>20</Uranium>
+            <Steel>15</Steel>
+            <ComponentIndustrial>2</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <researchPrerequisite>Fabrication</researchPrerequisite>
+        </recipeMaker>
+        <modExtensions>
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>EMP</damageDef>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
     </ThingDef>
 
     <ThingDef ParentName="BaseBullet">
@@ -287,6 +372,71 @@
             <explosionEffect>GiantExplosion</explosionEffect>
             <screenShakeFactor>0.2</screenShakeFactor>
         </projectile>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_Blockbuster</defName>
+        <label>blockbuster bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellHighExplosive</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+            <drawSize>1.4</drawSize>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Bomb</damageDef>
+            <!-- HE bomb is 150 dmg / 0.2 AP / 7.8 radius. -->
+            <damageAmountBase>250</damageAmountBase>
+            <armorPenetrationBase>0.35</armorPenetrationBase>
+            <speed>30</speed>
+            <explosionRadius>10.9</explosionRadius>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>Explosion_GiantBomb</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            <screenShakeFactor>0.1</screenShakeFactor>
+        </projectile>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_Neum</defName>
+        <label>neum bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellEMP</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <!-- Same blast as the high-explosive bomb... -->
+            <damageDef>Bomb</damageDef>
+            <damageAmountBase>150</damageAmountBase>
+            <armorPenetrationBase>0.2</armorPenetrationBase>
+            <speed>30</speed>
+            <explosionRadius>7.8</explosionRadius>
+            <!-- ...plus fire... -->
+            <explosionChanceToStartFire>0.5</explosionChanceToStartFire>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>MortarBomb_Explode</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <preExplosionSpawnSingleThingDef>CraterMedium</preExplosionSpawnSingleThingDef>
+            <ai_IsIncendiary>true</ai_IsIncendiary>
+        </projectile>
+        <modExtensions>
+            <!-- ...plus an EMP pulse over the same radius, in the same detonation. -->
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>EMP</damageDef>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
     </ThingDef>
 
 </Defs>

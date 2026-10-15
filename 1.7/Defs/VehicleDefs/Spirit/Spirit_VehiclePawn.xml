@@ -354,7 +354,9 @@
 				<ordinance>
 					<li>ROCKET_Bomb_Explosive</li>
 					<li>ROCKET_Bomb_HighExplosive</li>
+					<li>ROCKET_Bomb_Blockbuster</li>
 					<li>ROCKET_Bomb_Incendiary</li>
+					<li>ROCKET_Bomb_Neum</li>
 					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>
@@ -369,7 +371,11 @@
 				<skillScatter>5</skillScatter>
 				<ordinance>
 					<li>ROCKET_Bomb_Explosive</li>
+					<li>ROCKET_Bomb_HighExplosive</li>
+					<li>ROCKET_Bomb_Blockbuster</li>
 					<li>ROCKET_Bomb_Incendiary</li>
+					<li>ROCKET_Bomb_Neum</li>
+					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>
 			<li Class="Vehicles.CompProperties_FueledTravel">
