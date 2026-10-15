@@ -119,6 +119,38 @@ namespace AirstrikeMod
                 mouseAttachment: cursorIcon);
         }
 
+        public override IEnumerable<Gizmo> LoiterGizmos()
+        {
+            foreach (var g in base.LoiterGizmos())
+                yield return g;
+            if (!HasWeaponChoice) yield break;
+            // The Payload tab isn't reachable while airborne; switch weapons here instead.
+            var w = Weapon;
+            yield return new Command_Action
+            {
+                defaultLabel = "ROCKET_SwitchWeapon".Translate(w.LabelCap),
+                defaultDesc = "ROCKET_SwitchWeaponDesc".Translate(),
+                icon = w.ammoDef?.uiIcon ?? Icon,
+                action = () =>
+                {
+                    var options = new List<FloatMenuOption>();
+                    for (var i = 0; i < Weapons.Count; i++)
+                    {
+                        var idx = i;
+                        var wi = Weapons[i];
+                        var have = wi.ammoDef != null ? CountInCargo(wi.ammoDef) : 0;
+                        var label = wi.ammoDef != null
+                            ? "ROCKET_StrafingWeaponRow".Translate(wi.LabelCap, have, AmmoCountFor(wi),
+                                wi.ammoDef.label).Resolve()
+                            : wi.LabelCap;
+                        options.Add(new FloatMenuOption(label, () => SelectedWeaponIndex = idx,
+                            wi.ammoDef?.uiIcon, Color.white));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(options));
+                },
+            };
+        }
+
         public override void PostExposeData()
         {
             base.PostExposeData();

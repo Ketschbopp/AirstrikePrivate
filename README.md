@@ -14,6 +14,20 @@ A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfile
 
 Each mode is a separate gizmo on the vehicle. A fourth **Select ordinance** gizmo picks which shell/bomb type the Precision and Bombing Run gizmos drop.
 
+### Staying airborne (Apache)
+
+The Apache doesn't have to land after a strafing run. With **Stay airborne** toggled on (the default; the toggle is on the grounded Apache), it finishes the run, overshoots the last target a few cells and hovers there.
+
+Select the hovering Apache (click its shadow on the ground) to:
+
+- order another **Strafing Run** - it flies straight from the hover, no takeoff needed, and returns to hovering afterwards;
+- **switch weapon** (cannon / missiles) for the next run;
+- **Land at...** a spot you pick (with rotation), **Land here** (nearest clear spot below it), or **Return to base** (the spot it originally took off from).
+
+It burns fuel while hovering (8× its driving rate: about 21 in-game hours on a full tank) and makes an emergency landing at the nearest clear spot when the tank runs dry. While airborne it can't be shot at.
+
+For modders: set `<loiterAfterSortie>true</loiterAfterSortie>` (and optionally `loiterFuelMultiplier`) on any in-place (`inPlaceSortie`) strike comp.
+
 ### Multi-target chains (Shift+click)
 
 For Bombing Run and Strafing Run, **hold Shift while clicking** to add another rectangle to the run. Right-click to commit the chain (or cancel if nothing's locked).

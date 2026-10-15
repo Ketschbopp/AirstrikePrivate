@@ -73,5 +73,17 @@ namespace AirstrikeMod
 
         public int hoverTakeoffTicks = 90;
         public int hoverLandingTicks = 90;
+
+        /// <summary>
+        /// In-place sorties only: after the run, stay airborne (hovering) instead of
+        /// landing, until the player orders a landing. Toggleable per vehicle.
+        /// </summary>
+        public bool loiterAfterSortie = false;
+
+        /// <summary>
+        /// Fuel burned while hovering, as a multiple of the vehicle's normal per-tick
+        /// consumption rate.
+        /// </summary>
+        public float loiterFuelMultiplier = 1f;
     }
 }

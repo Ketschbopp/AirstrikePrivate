@@ -86,4 +86,21 @@
     <ROCKET_RunwayInfo_ExcludedTerrain_Label>Excluded terrain</ROCKET_RunwayInfo_ExcludedTerrain_Label>
     <ROCKET_RunwayInfo_ExcludedTerrain_Desc>Terrain and floor families that disqualify a cell as runway, even if they would otherwise be eligible.</ROCKET_RunwayInfo_ExcludedTerrain_Desc>
 
+
+    <!-- Staying airborne (VTOL loiter) -->
+    <ROCKET_StayAirborne>Stay airborne</ROCKET_StayAirborne>
+    <ROCKET_StayAirborneDesc>When on, the aircraft keeps hovering over the battlefield after a strafing run instead of landing. Select it in the air to order more runs, switch weapons or land. It burns fuel while airborne and lands by itself when the tank runs dry.</ROCKET_StayAirborneDesc>
+    <ROCKET_LoiterStarted>{0} is holding position in the air. Select it to order another run or to land.</ROCKET_LoiterStarted>
+    <ROCKET_LoiterOutOfFuel>{0} is out of fuel and is making an emergency landing.</ROCKET_LoiterOutOfFuel>
+    <ROCKET_LoiterInspect>Airborne, holding position.</ROCKET_LoiterInspect>
+    <ROCKET_LoiterFuel>Fuel: {0} / {1}</ROCKET_LoiterFuel>
+    <ROCKET_LandAt>Land at...</ROCKET_LandAt>
+    <ROCKET_LandAtDesc>Pick a spot and land there.</ROCKET_LandAtDesc>
+    <ROCKET_LandHere>Land here</ROCKET_LandHere>
+    <ROCKET_LandHereDesc>Set down at the nearest clear spot below the aircraft.</ROCKET_LandHereDesc>
+    <ROCKET_ReturnToPad>Return to base</ROCKET_ReturnToPad>
+    <ROCKET_ReturnToPadDesc>Fly back and land where the aircraft originally took off.</ROCKET_ReturnToPadDesc>
+    <ROCKET_NoLandingSpot>No clear landing spot.</ROCKET_NoLandingSpot>
+    <ROCKET_SwitchWeapon>Weapon: {0}</ROCKET_SwitchWeapon>
+    <ROCKET_SwitchWeaponDesc>Switch the strafing weapon used for the next run.</ROCKET_SwitchWeaponDesc>
 </LanguageData>

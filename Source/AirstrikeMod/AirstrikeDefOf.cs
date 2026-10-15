@@ -16,6 +16,7 @@ namespace AirstrikeMod
 
         public static ThingDef ROCKET_HoverLaunch;
         public static ThingDef ROCKET_HoverLanding;
+        public static ThingDef ROCKET_Loiter;
 
         static AirstrikeDefOf()
         {

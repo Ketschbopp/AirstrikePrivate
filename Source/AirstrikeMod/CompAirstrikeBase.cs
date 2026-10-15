@@ -17,6 +17,16 @@ namespace AirstrikeMod
 
         private ThingDef selectedOrdinance;
         private bool showAllOrdinance = true;
+        private bool loiterEnabled = true;
+
+        /// <summary>The hovering skyfaller currently holding this vehicle, if any.</summary>
+        public VehicleSkyfaller_Loiter Loiter => Vehicle.ParentHolder as VehicleSkyfaller_Loiter;
+
+        /// <summary>Map the sortie departs from: the hover's map while airborne.</summary>
+        protected Map OriginMap => Loiter?.Map ?? Vehicle.Map;
+
+        public bool CanLoiter => BaseProps.inPlaceSortie && BaseProps.loiterAfterSortie;
+        public bool LoiterEnabled => CanLoiter && loiterEnabled;
 
         private static readonly FieldInfo SubGraphicsField = typeof(Graphic_Collection)
             .GetField("subGraphics", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -255,7 +265,7 @@ namespace AirstrikeMod
             }
         }
 
-        protected float ResolvedFuelCost => ComputeFuelCost(Vehicle.Map);
+        protected float ResolvedFuelCost => ComputeFuelCost(OriginMap);
 
         protected abstract Gizmo BuildStrikeGizmo();
         protected abstract void StartTargeting(Map destMap);
@@ -273,6 +283,8 @@ namespace AirstrikeMod
                 yield return g;
             if (Vehicle.Faction != Faction.OfPlayer)
                 yield break;
+            if (CanLoiter && IsFirstLoiterComp())
+                yield return BuildLoiterToggle();
             if (!RequiresOrdinance)
             {
                 yield return BuildStrikeGizmo();
@@ -285,6 +297,47 @@ namespace AirstrikeMod
                 yield return BuildStrikeGizmo();
         }
 
+        private bool IsFirstLoiterComp()
+        {
+            var comps = Vehicle.AllComps;
+            for (var i = 0; i < comps.Count; i++)
+                if (comps[i] is CompAirstrikeBase b && b.CanLoiter)
+                    return b == this;
+            return false;
+        }
+
+        private static Texture2D _loiterIcon;
+        private static Texture2D LoiterIcon =>
+            _loiterIcon ??= ContentFinder<Texture2D>.Get("UI/ButtonLocalFlight", reportFailure: false)
+                            ?? BaseContent.BadTex;
+
+        private Gizmo BuildLoiterToggle()
+        {
+            return new Command_Toggle
+            {
+                defaultLabel = "ROCKET_StayAirborne".Translate(),
+                defaultDesc = "ROCKET_StayAirborneDesc".Translate(),
+                icon = LoiterIcon,
+                isActive = () => loiterEnabled,
+                toggleAction = () => loiterEnabled = !loiterEnabled,
+            };
+        }
+
+        /// <summary>
+        /// Gizmos offered by this comp while the vehicle hovers in a loiter skyfaller.
+        /// </summary>
+        public virtual IEnumerable<Gizmo> LoiterGizmos()
+        {
+            if (!BaseProps.inPlaceSortie) yield break;
+            if (RequiresOrdinance)
+            {
+                var sel = SelectedOrdinance;
+                if (sel == null || BaseProps.ordinance == null || !BaseProps.ordinance.Contains(sel))
+                    yield break;
+            }
+            yield return BuildStrikeGizmo();
+        }
+
         protected float ComputeFuelCost(Map destMap, int passCount = 1)
         {
             var launcher = Vehicle.CompVehicleLauncher;
@@ -292,7 +345,7 @@ namespace AirstrikeMod
             var n = Mathf.Max(1, passCount);
             var buzzCost = launcher.FuelNeededToLaunchAtDist(Find.WorldGrid.AverageTileSize)
                            * AirstrikeMod.Settings.fuelScale;
-            if (destMap == null || destMap == Vehicle.Map) return buzzCost * n;
+            if (destMap == null || destMap == OriginMap) return buzzCost * n;
             return launcher.FuelNeededToLaunchAtDist(destMap.Tile) * 2f + buzzCost * n;
         }
 
@@ -335,7 +388,8 @@ namespace AirstrikeMod
                     Vehicle, Vehicle.Map, Vehicle.Position, Vehicle.Rotation);
             }
 
-            if (!Vehicle.Drafted)
+            // Unspawned = hovering in a loiter skyfaller, where "drafted" doesn't apply.
+            if (Vehicle.Spawned && !Vehicle.Drafted)
             {
                 cmd.Disable("ROCKET_VehicleNotStarted".Translate());
             }
@@ -377,6 +431,13 @@ namespace AirstrikeMod
 
         protected void PickDestinationMap(Action<Map> onPicked)
         {
+            // Airborne: re-task on the map it's hovering over.
+            var loiter = Loiter;
+            if (loiter is { Spawned: true })
+            {
+                onPicked(loiter.Map);
+                return;
+            }
             var maps = Find.Maps;
             if (maps == null || maps.Count <= 1)
             {
@@ -433,8 +494,11 @@ namespace AirstrikeMod
         protected void LaunchStrike(Map destMap, List<BombingSegment> segments,
             Map originalMap, StrafingPayload strafing = null)
         {
-            OnTargetsChosen(destMap, segments, Vehicle.Position,
-                Vehicle.Rotation, strafing);
+            var loiter = Loiter;
+            if (loiter is { Spawned: true })
+                OnTargetsChosen(destMap, segments, loiter.returnCell, loiter.returnRot, strafing);
+            else
+                OnTargetsChosen(destMap, segments, Vehicle.Position, Vehicle.Rotation, strafing);
             RestoreCurrentMap(originalMap);
         }
 
@@ -484,10 +548,15 @@ namespace AirstrikeMod
                 }
             }
 
-            var crossMap = destMap != Vehicle.Map;
-            var originMapParent = Vehicle.Map.Parent;
+            var loiter = Loiter;
+            if (loiter is { Spawned: false }) loiter = null;
+            var originMap = loiter?.Map ?? Vehicle.Map;
+            var crossMap = destMap != originMap;
+            var originMapParent = originMap.Parent;
             var destMapParent = destMap.Parent;
             var inPlace = BaseProps.inPlaceSortie && !crossMap;
+            var anchorCell = loiter?.Position ?? Vehicle.Position;
+            var anchorRot = loiter?.Rotation ?? Vehicle.Rotation;
 
             Vehicle.CompFueledTravel?.ConsumeFuel(ComputeFuelCost(destMap, segments.Count));
 
@@ -496,7 +565,7 @@ namespace AirstrikeMod
                 pilots[i].records.Increment(AirstrikeDefOf.RocketsAirstrike_SortiesFlown);
             var (chosenPilot, _) = BestPilotAndAbility();
 
-            BombingSpeedManager.MarkFast(Vehicle, Vehicle.Rotation);
+            BombingSpeedManager.MarkFast(Vehicle, loiter?.returnRot ?? Vehicle.Rotation);
 
             var resolvedScatter = ResolveBombScatter();
             var resolvedStrafingSpread = strafing != null
@@ -527,11 +596,20 @@ namespace AirstrikeMod
                 strafingSpreadCells: resolvedStrafingSpread,
                 strafingFireOriginOffset: strafing?.fireOriginOffset ?? 3,
                 strafingRunWidth: strafing?.runWidth ?? 1,
-                inPlaceAnchor: inPlace ? Vehicle.Position : (IntVec3?)null,
-                inPlaceForward: inPlace ? Vehicle.Rotation : (Rot4?)null,
+                inPlaceAnchor: inPlace ? anchorCell : (IntVec3?)null,
+                inPlaceForward: inPlace ? anchorRot : (Rot4?)null,
                 hoverApproachCells: BaseProps.hoverApproachCells,
                 hoverTakeoffTicks: BaseProps.hoverTakeoffTicks,
-                hoverLandingTicks: BaseProps.hoverLandingTicks);
+                hoverLandingTicks: BaseProps.hoverLandingTicks,
+                loiterAfter: inPlace && LoiterEnabled,
+                loiterFuelMultiplier: BaseProps.loiterFuelMultiplier);
+
+            if (loiter != null)
+            {
+                // Already airborne: fly the run straight from the hover.
+                loiter.HandOff(arrival);
+                return;
+            }
 
             if (inPlace)
             {
@@ -602,6 +680,7 @@ namespace AirstrikeMod
             // Only the primary's value is read at runtime; secondaries scribe null.
             Scribe_Defs.Look(ref selectedOrdinance, nameof(selectedOrdinance));
             Scribe_Values.Look(ref showAllOrdinance, nameof(showAllOrdinance), true);
+            Scribe_Values.Look(ref loiterEnabled, nameof(loiterEnabled), true);
         }
     }
 }
