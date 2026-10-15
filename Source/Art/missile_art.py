@@ -1,49 +1,63 @@
-"""Draws the strafing missile: projectile sprite (nose up), its rocket-motor flame
-(root at the top, tail pointing down) and the cargo item icon.
+"""Draws the strafing missile and the seeker missile in the original mod's art style
+(see rocket_style.py): projectile sprites (nose up), the rocket-motor flame (root at
+the top, tail pointing down) and the cargo item icons (two missiles tilted 45 degrees).
 
     python Source/Art/missile_art.py <repo root>
 """
 import sys
 from pathlib import Path
+
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rocket_style import S, Sprite, add_outline, ellipse, poly, rrect  # noqa: E402
+
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-S = 4  # supersample
+
+BODY = (200, 202, 188)
+FIN = (150, 154, 150)
+DARK = (78, 78, 76)
 
 
-def missile(size=128):
-    n = size * S
-    im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    cx = n / 2
-    w = n * 0.085           # body half-width
-    top, bot = n * 0.08, n * 0.90
-    ol = int(n * 0.02)
-    black = (0, 0, 0, 255)
-    # tail fins
+def missile(seeker=False, size=128):
+    """Nose-up missile on a size x size canvas, without outline."""
+    sp = Sprite(size)
+    cx, hw = 64, 9
+    top_body, bot = 33, 111
+
+    # Tail fins and mid wings (behind the body), shaded light->dark outward.
     for sgn in (-1, 1):
-        d.polygon([(cx + sgn * w, bot - n * 0.20), (cx + sgn * (w + n * 0.13), bot - n * 0.02),
-                   (cx + sgn * (w + n * 0.13), bot + n * 0.03), (cx + sgn * w, bot)],
-                  fill=(120, 124, 120, 255), outline=black, width=ol)
-        # mid canards
-        d.polygon([(cx + sgn * w, top + n * 0.30), (cx + sgn * (w + n * 0.07), top + n * 0.40),
-                   (cx + sgn * (w + n * 0.07), top + n * 0.43), (cx + sgn * w, top + n * 0.43)],
-                  fill=(120, 124, 120, 255), outline=black, width=ol)
-    # body
-    d.rounded_rectangle([cx - w, top + n * 0.12, cx + w, bot], radius=int(w * 0.4),
-                        fill=(178, 182, 170, 255), outline=black, width=ol)
-    # nose cone
-    d.polygon([(cx - w, top + n * 0.14), (cx, top), (cx + w, top + n * 0.14)],
-              fill=(70, 70, 70, 255), outline=black)
-    d.line([(cx - w, top + n * 0.14), (cx, top), (cx + w, top + n * 0.14)], fill=black, width=ol)
-    # red warhead band + highlight
-    d.rectangle([cx - w + ol, top + n * 0.18, cx + w - ol, top + n * 0.22], fill=(200, 40, 30, 255))
-    d.line([(cx - w * 0.35, top + n * 0.26), (cx - w * 0.35, bot - n * 0.06)],
-           fill=(225, 228, 220, 255), width=int(ol * 0.8))
-    # nozzle
-    d.rectangle([cx - w * 0.7, bot - ol, cx + w * 0.7, bot + n * 0.03], fill=(40, 40, 40, 255),
-                outline=black, width=ol // 2)
-    return im.resize((size, size), Image.LANCZOS)
+        sp.flat(poly([(cx + sgn * hw, 90), (cx + sgn * (hw + 14), 106), (cx + sgn * (hw + 14), 113),
+                      (cx + sgn * hw, 111)]), FIN, grad=(1.1, 0.7), axis=(sgn, 0), bounds=(sgn * cx, sgn * (cx + 24)))
+        sp.flat(poly([(cx + sgn * hw, 50), (cx + sgn * (hw + 7), 59), (cx + sgn * (hw + 7), 63),
+                      (cx + sgn * hw, 64)]), FIN, grad=(1.1, 0.75), axis=(sgn, 0), bounds=(sgn * cx, sgn * (cx + 17)))
+    # Body.
+    sp.cylinder(rrect(cx - hw, top_body, cx + hw, bot, 3), BODY, cx, hw, top_body, bot)
+    # Nozzle.
+    sp.cylinder(rrect(cx - 6, bot - 2, cx + 6, bot + 6, 2), (60, 60, 58), cx, 6)
+    sp.solid(ellipse(cx, bot + 5.5, 4.2, 1.2), (20, 20, 20))
+    # Panel seams and centre fin.
+    for y in (46, 78, 96):
+        sp.line([(cx - hw + 0.5, y), (cx + hw - 0.5, y)], col=(120, 122, 116), width=0.7, alpha=0.8)
+    sp.flat(rrect(cx - 1.2, 92, cx + 1.2, 114, 1), FIN, grad=(1.0, 0.8))
+
+    if seeker:
+        # Glass seeker dome.
+        sp.cylinder(poly([(cx - hw, 35), (cx - hw + 1, 26), (cx - 5, 18), (cx, 15), (cx + 5, 18),
+                          (cx + hw - 1, 26), (cx + hw, 35)]), (60, 104, 140), cx, hw, gloss=0.45)
+        sp.solid(ellipse(cx - 3.2, 22, 1.6, 3.2), (225, 240, 250))
+        band = (236, 196, 30)
+    else:
+        # Dark ogive nose.
+        sp.cylinder(poly([(cx - hw, 35), (cx - hw + 1.5, 25), (cx - 4.5, 17), (cx, 11), (cx + 4.5, 17),
+                          (cx + hw - 1.5, 25), (cx + hw, 35)]), DARK, cx, hw)
+        band = (196, 42, 32)
+    # Warhead band.
+    sp.cylinder(rrect(cx - hw + 0.3, 37, cx + hw - 0.3, 41, 0), band, cx, hw, gloss=0.1)
+    # Stencilled markings.
+    sp.stencil(cx - 4.5, 58, [4, 3, 4], w=1.3, h=1.7, gap=0.7, seed=3 if seeker else 2)
+    return sp
 
 
 def flame(w=64, h=256):
@@ -59,21 +73,28 @@ def flame(w=64, h=256):
     return im.resize((w, h), Image.LANCZOS)
 
 
-def icon(size=128):
-    """Cargo item: two missiles lying diagonally."""
-    m = missile(size)
-    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    for dx in (-14, 12):
-        r = m.rotate(-45, resample=Image.BICUBIC, expand=False)
-        out.alpha_composite(r, (dx, -dx // 2))
-    return out
+def icon(seeker=False, size=128):
+    """Cargo item: two missiles side by side, tilted 45 degrees (nose to upper right)."""
+    single = missile(seeker).image(outline=0)
+    single = single.resize((int(size * 1.08), int(size * 1.08)), Image.LANCZOS)
+    tilted = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    tilted.alpha_composite(single, ((size - single.width) // 2, (size - single.height) // 2))
+    tilted = tilted.rotate(-45, resample=Image.BICUBIC)
+    out = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
+    for k in (-10, 10):
+        out.alpha_composite(tilted, (size // 2 + k, size // 2 + k))
+    out = out.crop((size // 2, size // 2, size // 2 + size, size // 2 + size))
+    return add_outline(out, 5.0)
 
 
 proj = ROOT / "Textures/Things/Projectile"
 proj.mkdir(parents=True, exist_ok=True)
-missile().save(proj / "ROCKET_Missile.png", optimize=True)
-flame().save(proj / "ROCKET_MissileFlame.png", optimize=True)
 item = ROOT / "Textures/Things/Item/Resource/Missile"
 item.mkdir(parents=True, exist_ok=True)
+
+add_outline(missile().image(outline=0), 3.2).save(proj / "ROCKET_Missile.png", optimize=True)
+add_outline(missile(seeker=True).image(outline=0), 3.2).save(proj / "ROCKET_SeekerMissile.png", optimize=True)
+flame().save(proj / "ROCKET_MissileFlame.png", optimize=True)
 icon().save(item / "StrafingMissile.png", optimize=True)
+icon(seeker=True).save(item / "SeekerMissile.png", optimize=True)
 print("wrote missile textures")

@@ -22,3 +22,7 @@ packages/
 CLAUDE.md
 **/CLAUDE.md
 .claude/
+
+# Python bytecode from the art scripts
+__pycache__/
+*.pyc

@@ -11,6 +11,7 @@ A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfile
 - **Strafing Run** - fire down a long, thin rectangle. Uses its own ammo, not the bomb pool. The Falcon, Kraken and Apache can switch strafing weapon in the **Payload** tab:
   - **Cannon** - autocannon rounds (steel by default).
   - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but a small blast covering only the 3x3 cells around the impact. Fewer shots per run (10 on jets, 6 on the Apache).
+  - **Seeker missiles** - air-to-ground missiles with a seeker head (`ROCKET_SeekerMissile`, machining table, needs Microelectronics). Each missile locks onto a hostile Vehicle Framework vehicle within 18 cells of where it's aimed and steers into it in flight (turn-rate limited, so it visibly curves), following it if it moves. Salvos spread over vehicles not already targeted; if a target dies the missile looks for another; with nothing to lock it flies like a normal missile. Quadruple damage against vehicles. 8 per run on jets, 5 on the Apache. Tuning: `AirstrikeMod.SeekerMissileModExtension` (`seekRadius`, `turnRateDegPerTick`, `retargetInterval`, `terminalDistance`).
 
 Each mode is a separate gizmo on the vehicle. A fourth **Select ordinance** gizmo picks which shell/bomb type the Precision and Bombing Run gizmos drop.
 
