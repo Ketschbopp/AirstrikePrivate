@@ -31,8 +31,22 @@ namespace AirstrikeMod
         {
             if (vehicle == null) return;
             if (!DefHasFlameComp(vehicle.VehicleDef)) return;
-            var comp = vehicle.GetCachedComp<CompEngineFlame>();
-            comp?.DrawFlames(basePos, rot, extraRotation);
+            ActiveFor(vehicle)?.DrawFlames(basePos, rot, extraRotation);
+        }
+
+        /// <summary>
+        /// The flame comp that draws for <paramref name="vehicle"/>: the last one in its comp
+        /// list. A child def (e.g. the Kraken inheriting the Falcon) can append its own
+        /// CompProperties_EngineFlame to replace the inherited one.
+        /// </summary>
+        public static CompEngineFlame ActiveFor(VehiclePawn vehicle)
+        {
+            if (vehicle == null) return null;
+            CompEngineFlame found = null;
+            var comps = vehicle.AllComps;
+            for (var i = 0; i < comps.Count; i++)
+                if (comps[i] is CompEngineFlame f) found = f;
+            return found;
         }
 
         private static bool DefHasFlameComp(VehicleDef def)

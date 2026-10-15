@@ -19,9 +19,11 @@ namespace AirstrikeMod.Patches
         {
             // Only when this call actually detonated (vanilla sets the flag on success).
             if (__state.already || !__instance.destroyedThroughDetonation) return;
-            if (!__instance.parent.def.HasModExtension<SecondaryExplosionsModExtension>()) return;
-            SecondaryExplosionHelper.Trigger(__instance.parent.def, __state.pos, map,
-                __instance.ExplosiveRadius(), null);
+            var def = __instance.parent.def;
+            if (def.HasModExtension<SecondaryExplosionsModExtension>())
+                SecondaryExplosionHelper.Trigger(def, __state.pos, map, __instance.ExplosiveRadius(), null);
+            if (def.HasModExtension<WhitePhosphorusModExtension>())
+                WhitePhosphorusHelper.Trigger(def, __state.pos, map, __instance.ExplosiveRadius(), null);
         }
     }
 }

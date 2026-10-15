@@ -16,6 +16,8 @@ VARIANTS = {
     "Neum": ((0.78, 0.98, 0.80), (40, 230, 240)),         # uranium-green body, EMP-cyan band
     "Smoke": ((1.30, 1.30, 1.30), (235, 235, 235)),       # pale grey body, white band
     "TacticalNuke": ((1.25, 1.18, 0.80), (40, 40, 40)),   # warning-yellow body, black band
+    "WhitePhosphorus": ((1.38, 1.38, 1.34), (120, 215, 120)),  # near-white body, light-green WP band
+    "ToxGas": ((0.62, 0.78, 0.48), (150, 255, 40)),       # dark olive body, toxic-green band
 }
 
 

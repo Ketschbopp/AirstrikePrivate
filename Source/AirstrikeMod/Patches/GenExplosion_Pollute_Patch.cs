@@ -18,6 +18,7 @@ namespace AirstrikeMod.Patches
             if (projectile.projectile != null)
             {
                 NuclearDetonationHelper.Trigger(projectile, center, map);
+                WhitePhosphorusHelper.Trigger(projectile, center, map, radius, instigator);
                 SecondaryExplosionHelper.Trigger(projectile, center, map, radius, instigator);
             }
         }

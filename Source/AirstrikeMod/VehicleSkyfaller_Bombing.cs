@@ -154,7 +154,7 @@ namespace AirstrikeMod
             DrawShadow(spriteHeadingDeg);
             if (!_engineFlameLookedUp)
             {
-                _engineFlame = vehicle?.GetComp<CompEngineFlame>();
+                _engineFlame = CompEngineFlame.ActiveFor(vehicle);
                 _engineFlameLookedUp = true;
             }
             _engineFlame?.DrawFlames(pos, Rotation, extraRotation);

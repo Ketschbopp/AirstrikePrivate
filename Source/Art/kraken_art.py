@@ -295,18 +295,24 @@ def draw():
         c.line(mm([(760, 930), (834, 1030)]))
         c.line(mm([(752, 1060), (838, 1086)]), color=(185, 185, 185), width=1.8)
 
-    # Nozzles: grey outer ring, ribbed petals, dark core (unpainted).
-    for (nx, ny) in NOZZLES:
-        ring = [(nx + NOZ_R * math.cos(t), ny + NOZ_R * 0.9 * math.sin(t))
-                for t in np.linspace(0, 2 * math.pi, 64, endpoint=False)]
-        c.fill(ring, radial(nx - 8, ny - 8, NOZ_R * 1.3, 150, 70))
-        c.unmask(ring)
-        for k in range(14):
-            t = k / 14 * 2 * math.pi
-            c.line([(nx + 14 * math.cos(t), ny + 13 * math.sin(t)),
-                    (nx + (NOZ_R - 4) * math.cos(t), ny + (NOZ_R - 4) * 0.9 * math.sin(t))],
-                   color=(45, 45, 45), width=1.6)
-        c.ellipse((nx - 15, ny - 13, nx + 15, ny + 13), radial(nx, ny, 15, 10, 45), outline=1.5)
+    # Nozzles seen from above: tapered tubes with ribbed petals and a dark exit lip
+    # (unpainted), poking out behind the aft deck.
+    for (nx, _) in NOZZLES:
+        top, bot = 1108, 1182
+        tube = [(nx - 33, top, 'c'), (nx + 33, top, 'c'), (nx + 28, bot, 'c'), (nx - 28, bot, 'c')]
+        shade = lambda x, y, nx=nx: (lambda u: 150 - 85 * np.clip(u * u, 0, 1))((x - (nx - 6)) / 34)
+        path = catmull(tube)
+        c.fill(path, shade, outline=5)
+        c.unmask(path)
+        # engine/nozzle seam and ribbed petals on the convergent section
+        c.line([(nx - 32, 1128), (nx + 32, 1128)], color=(35, 35, 35), width=2.5)
+        for k in range(-4, 5):
+            fx = k / 4.6
+            c.line([(nx + fx * 31, 1131), (nx + fx * 27, bot - 6)], color=(48, 48, 48), width=1.6)
+        # exit lip, foreshortened (dark interior visible at the very end)
+        lip = [(nx + 27 * math.cos(t), bot - 2 + 5 * math.sin(t)) for t in np.linspace(0, 2 * math.pi, 40)]
+        c.fill(lip, const(18), outline=1.5)
+        c.unmask(lip)
 
     # Canopy: amber-tinted glass with frame and gloss (unpainted).
     canopy = catmull(CANOPY)
