@@ -19,6 +19,7 @@ namespace AirstrikeMod
         private Action _startDelegate;
 
         private int selectedWeaponIndex;
+        private string selectedWeaponKey;
 
         public override bool RequiresOrdinance => false;
 
@@ -27,7 +28,18 @@ namespace AirstrikeMod
 
         public int SelectedWeaponIndex
         {
-            get => Mathf.Clamp(selectedWeaponIndex, 0, Weapons.Count - 1);
+            get
+            {
+                // Re-find the saved choice by key in case the list changed (CE on/off,
+                // generic ammo toggled, mod update).
+                if (selectedWeaponKey != null)
+                {
+                    var i = Weapons.FindIndex(w => w.Key == selectedWeaponKey);
+                    if (i >= 0) selectedWeaponIndex = i;
+                    selectedWeaponKey = null;
+                }
+                return Mathf.Clamp(selectedWeaponIndex, 0, Weapons.Count - 1);
+            }
             set => selectedWeaponIndex = Mathf.Clamp(value, 0, Weapons.Count - 1);
         }
 
@@ -156,6 +168,9 @@ namespace AirstrikeMod
         {
             base.PostExposeData();
             Scribe_Values.Look(ref selectedWeaponIndex, nameof(selectedWeaponIndex));
+            if (Scribe.mode == LoadSaveMode.Saving)
+                selectedWeaponKey = Weapons[SelectedWeaponIndex].Key;
+            Scribe_Values.Look(ref selectedWeaponKey, nameof(selectedWeaponKey));
         }
     }
 }

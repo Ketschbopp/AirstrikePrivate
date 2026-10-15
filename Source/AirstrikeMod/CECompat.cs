@@ -35,6 +35,15 @@ namespace AirstrikeMod
         private static MethodInfo _launchCE;               // CE_Utility.LaunchProjectileCE(ThingDef, Vector2, LocalTargetInfo, Thing, float x4)
         private static readonly HashSet<string> _warned = new();
 
+        private static Type _ammoSetDef;
+        private static FieldInfo _ammoTypes;        // AmmoSetDef.ammoTypes (List<AmmoLink>)
+        private static FieldInfo _ammoConsumed;     // AmmoSetDef.ammoConsumedPerShot
+        private static FieldInfo _linkAmmo;         // AmmoLink.ammo
+        private static FieldInfo _linkProjectile;   // AmmoLink.projectile
+        private static FieldInfo _ammoClass;        // AmmoDef.ammoClass
+        private static FieldInfo _settings;         // Controller.settings
+        private static PropertyInfo _enableAmmoSystem; // Settings.EnableAmmoSystem
+
         public static bool Active
         {
             get
@@ -75,6 +84,24 @@ namespace AirstrikeMod
                         typeof(float), typeof(float), typeof(float), typeof(float),
                     });
 
+                _ammoSetDef = AccessTools.TypeByName("CombatExtended.AmmoSetDef");
+                if (_ammoSetDef != null)
+                {
+                    _ammoTypes = AccessTools.Field(_ammoSetDef, "ammoTypes");
+                    _ammoConsumed = AccessTools.Field(_ammoSetDef, "ammoConsumedPerShot");
+                }
+                var ammoLink = AccessTools.TypeByName("CombatExtended.AmmoLink");
+                if (ammoLink != null)
+                {
+                    _linkAmmo = AccessTools.Field(ammoLink, "ammo");
+                    _linkProjectile = AccessTools.Field(ammoLink, "projectile");
+                }
+                if (ammoDef != null) _ammoClass = AccessTools.Field(ammoDef, "ammoClass");
+                var controller = AccessTools.TypeByName("CombatExtended.Controller");
+                _settings = controller != null ? AccessTools.Field(controller, "settings") : null;
+                var settingsType = AccessTools.TypeByName("CombatExtended.Settings");
+                _enableAmmoSystem = settingsType != null ? AccessTools.Property(settingsType, "EnableAmmoSystem") : null;
+
                 _active = _projectileCE != null && _doExplosionCE != null;
                 if (_active)
                     Log.Message("[Rockets.Airstrike] Combat Extended detected: using CE explosions, shrapnel and projectiles.");
@@ -110,6 +137,77 @@ namespace AirstrikeMod
 
         public static bool IsCEProjectile(ThingDef def) =>
             Active && def?.thingClass != null && _projectileCE.IsAssignableFrom(def.thingClass);
+
+        // ------------------------------------------------------------ ammo sets
+
+        public struct AmmoChoice
+        {
+            public ThingDef ammo;
+            public ThingDef projectile;
+            public string label;
+            public int consumedPerShot;
+        }
+
+        /// <summary>False when CE's "enable ammo system" setting is off (guns need no ammo).</summary>
+        public static bool AmmoSystemEnabled
+        {
+            get
+            {
+                if (!Active || _settings == null || _enableAmmoSystem == null) return true;
+                try
+                {
+                    var s = _settings.GetValue(null);
+                    return s == null || (bool)_enableAmmoSystem.GetValue(s);
+                }
+                catch { return true; }
+            }
+        }
+
+        /// <summary>
+        /// Ammo types of a CE AmmoSetDef as they are at runtime. CE's generic-ammo option
+        /// rewrites these links at startup (AmmoGeneralizer) to the generic ammo items while
+        /// keeping each type's projectile, so this honours that setting automatically.
+        /// </summary>
+        public static List<AmmoChoice> AmmoLinks(string ammoSetDefName)
+        {
+            if (!Active || _ammoSetDef == null || _ammoTypes == null || string.IsNullOrEmpty(ammoSetDefName))
+                return null;
+            try
+            {
+                var set = GenDefDatabase.GetDefSilentFail(_ammoSetDef, ammoSetDefName, false);
+                if (set == null)
+                {
+                    WarnOnce("ammoset:" + ammoSetDefName, $"CE ammo set {ammoSetDefName} not found.");
+                    return null;
+                }
+                var consumed = _ammoConsumed != null ? Math.Max(1, (int)_ammoConsumed.GetValue(set)) : 1;
+                var result = new List<AmmoChoice>();
+                if (_ammoTypes.GetValue(set) is System.Collections.IEnumerable links)
+                {
+                    foreach (var link in links)
+                    {
+                        var ammo = _linkAmmo?.GetValue(link) as ThingDef;
+                        var proj = _linkProjectile?.GetValue(link) as ThingDef;
+                        if (ammo == null || proj == null) continue;
+                        var cls = _ammoClass?.GetValue(ammo) as Def;
+                        var shortLabel = cls != null ? (AccessTools.Field(cls.GetType(), "labelShort")?.GetValue(cls) as string) : null;
+                        result.Add(new AmmoChoice
+                        {
+                            ammo = ammo,
+                            projectile = proj,
+                            label = (shortLabel ?? cls?.label ?? ammo.label).CapitalizeFirst(),
+                            consumedPerShot = consumed,
+                        });
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WarnOnce("ammoset:" + ammoSetDefName, $"Reading CE ammo set {ammoSetDefName} failed: {ex}");
+                return null;
+            }
+        }
 
         // ------------------------------------------------------------ explosions
 

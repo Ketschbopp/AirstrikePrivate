@@ -22,7 +22,19 @@ namespace AirstrikeMod
         public int fireOriginOffset = -1;
         public SoundDef fireSound;
 
+        /// <summary>
+        /// Combat Extended only: an AmmoSetDef defName (e.g. AmmoSet_20x102mmNATO). With CE
+        /// active this weapon expands into one choice per ammo type in the set (AP, HE,
+        /// Sabot, ...), reading the set at runtime so CE's generic-ammo option is honoured.
+        /// Without CE it is ignored and projectileDef/ammoDef are used. Not inherited by
+        /// entries in <c>weapons</c>.
+        /// </summary>
+        public string ammoSet;
+
         public string LabelCap => (label ?? projectileDef?.label ?? "?").CapitalizeFirst();
+
+        /// <summary>Stable save key: survives the weapon list changing (e.g. CE toggled).</summary>
+        public string Key => (label ?? "") + "|" + (ammoDef?.defName ?? projectileDef?.defName ?? "");
 
         internal StrafingWeapon ResolvedAgainst(CompProperties_AirstrikeStrafingRun p)
         {
@@ -39,7 +51,10 @@ namespace AirstrikeMod
                 leadCells = leadCells >= 0 ? leadCells : p.leadCells,
                 fireOriginOffset = fireOriginOffset >= 0 ? fireOriginOffset : p.fireOriginOffset,
                 fireSound = fireSound ?? p.fireSound,
+                ammoSet = ammoSet,
             };
         }
+
+        internal StrafingWeapon Clone() => (StrafingWeapon)MemberwiseClone();
     }
 }

@@ -61,6 +61,9 @@ namespace AirstrikeMod
         /// </summary>
         public string defaultWeaponLabel = "cannon";
 
+        /// <summary>Combat Extended ammo set for the default weapon (see StrafingWeapon.ammoSet).</summary>
+        public string ammoSet;
+
         /// <summary>
         /// Alternative strafing weapons the player can switch to. Unset fields inherit
         /// the top-level values.
@@ -75,13 +78,35 @@ namespace AirstrikeMod
             get
             {
                 if (_resolved != null) return _resolved;
-                _resolved = new List<StrafingWeapon>
+                var list = new List<StrafingWeapon>
                 {
-                    new StrafingWeapon { label = defaultWeaponLabel }.ResolvedAgainst(this),
+                    new StrafingWeapon { label = defaultWeaponLabel, ammoSet = ammoSet }.ResolvedAgainst(this),
                 };
                 if (weapons != null)
                     foreach (var w in weapons)
-                        if (w != null) _resolved.Add(w.ResolvedAgainst(this));
+                        if (w != null) list.Add(w.ResolvedAgainst(this));
+
+                // Combat Extended: one choice per ammo type of the weapon's ammo set.
+                _resolved = new List<StrafingWeapon>();
+                foreach (var w in list)
+                {
+                    var links = string.IsNullOrEmpty(w.ammoSet) ? null : CECompat.AmmoLinks(w.ammoSet);
+                    if (links == null || links.Count == 0)
+                    {
+                        _resolved.Add(w);
+                        continue;
+                    }
+                    foreach (var link in links)
+                    {
+                        var v = w.Clone();
+                        v.label = $"{w.LabelCap} ({link.label})";
+                        v.projectileDef = link.projectile;
+                        // Ammo system off in CE settings: strafing is free, like CE guns.
+                        v.ammoDef = CECompat.AmmoSystemEnabled ? link.ammo : null;
+                        v.ammoPerRound = System.Math.Max(1, w.bulletsPerRound) * link.consumedPerShot;
+                        _resolved.Add(v);
+                    }
+                }
                 return _resolved;
             }
         }

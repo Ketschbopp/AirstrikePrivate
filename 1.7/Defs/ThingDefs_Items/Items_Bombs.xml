@@ -309,7 +309,7 @@
     <ThingDef ParentName="ResourceBase">
         <defName>ROCKET_StrafingMissile</defName>
         <label>air-to-ground missile</label>
-        <description>A small guided air-to-ground missile with a shaped-charge penetrator warhead. Loaded into aircraft cargo and fired during strafing runs. The warhead punches through heavy armor and is devastating against vehicles, but its blast covers barely more than the cell it hits.</description>
+        <description>A small guided air-to-ground missile with a shaped-charge penetrator warhead. Loaded into aircraft cargo and fired during strafing runs. The warhead punches through heavy armor and is devastating against vehicles, but its blast is small: it covers only the cells right around the impact.</description>
         <soundInteract>Metal_Drop</soundInteract>
         <soundDrop>Standard_Drop</soundDrop>
         <stackLimit>25</stackLimit>
@@ -606,11 +606,11 @@
 
     <!-- Strafing missile: very heavy penetration, triple damage to vehicles (VF
          multiplier, applied because the missile registers itself as the weapon),
-         and a blast that only covers the impact cell. -->
+         and a small blast covering the 3x3 cells around the impact. -->
     <ThingDef ParentName="BaseBullet">
         <defName>ROCKET_Bullet_StrafingMissile</defName>
         <label>air-to-ground missile</label>
-        <description>Shaped-charge air-to-ground missiles. Very heavy armor penetration and triple damage against vehicles, but the blast only covers the cell it hits.</description>
+        <description>Shaped-charge air-to-ground missiles. Very heavy armor penetration and triple damage against vehicles, but a small blast that only covers the cells right around the impact.</description>
         <graphicData>
             <texPath>Things/Projectile/ROCKET_Missile</texPath>
             <graphicClass>Graphic_Single</graphicClass>
@@ -625,8 +625,8 @@
             <armorPenetrationBase>2.0</armorPenetrationBase>
             <stoppingPower>3</stoppingPower>
             <speed>40</speed>
-            <!-- Under 1: the blast only touches the impact cell. -->
-            <explosionRadius>0.9</explosionRadius>
+            <!-- 1.9: the impact cell and the 8 around it (3x3). -->
+            <explosionRadius>1.9</explosionRadius>
             <flyOverhead>false</flyOverhead>
             <soundExplode>MortarBomb_Explode</soundExplode>
             <soundAmbient>MortarRound_Ambient</soundAmbient>

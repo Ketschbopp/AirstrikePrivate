@@ -10,7 +10,7 @@ A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfile
 - **Bombing Run** - a line of bombs along a rotatable rectangle. Spacing is driven by the selected bomb's explosion radius.
 - **Strafing Run** - fire down a long, thin rectangle. Uses its own ammo, not the bomb pool. The Falcon, Kraken and Apache can switch strafing weapon in the **Payload** tab:
   - **Cannon** - autocannon rounds (steel by default).
-  - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but the blast only covers the impact cell. Fewer shots per run (10 on jets, 6 on the Apache).
+  - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but a small blast covering only the 3x3 cells around the impact. Fewer shots per run (10 on jets, 6 on the Apache).
 
 Each mode is a separate gizmo on the vehicle. A fourth **Select ordinance** gizmo picks which shell/bomb type the Precision and Bombing Run gizmos drop.
 
@@ -74,7 +74,8 @@ The mod works on vanilla and, optionally, with [Combat Extended](https://github.
 
 - **Bombs** explode through CE's `GenExplosionCE` (CE armour penetration and falloff) and throw CE shrapnel (Explosive, High-Explosive, Neum, Blockbuster bombs). Nuclear, EMP, white phosphorus and pollution effects still apply.
 - **Vanilla mortar shells** in the payload lists work with CE's shell ammo (resolved through CE's `detonateProjectile`).
-- **Cannon strafing** fires CE 20x102mm NATO AP-HE rounds (the CE autocannon calibre) from the aircraft's altitude, consuming CE ammo (one cartridge per bullet). **Missile strafing** fires a CE missile (450 mm penetrator, small HE burst, smoke trail).
+- **Cannon strafing** uses CE's 20x102mm NATO ammo set (the CE autocannon calibre): the Payload tab offers one cannon choice per ammo type - **AP, Incendiary, AP-HE, Sabot** - each firing its own CE round and consuming its own cartridges (one per bullet). Compatible with CE's **generic ammo** option (the choices then use the generic autocannon ammo) and its **ammo system off** option (strafing becomes free). Any strafing weapon can opt in with `<ammoSet>` (comp or `weapons` entry).
+- **Missile strafing** fires a CE missile (450 mm penetrator, small HE burst, smoke trail).
 - **Aircraft armour** converted to CE units (jets 6 mm / 12 MPa, Apache 10 mm / 22 MPa); bombs and missiles get inventory **Bulk**.
 
 > Combat Extended has no RimWorld 1.7 release yet (it currently supports 1.6). The integration is written against CE's current source and activates once CE runs on 1.7.
