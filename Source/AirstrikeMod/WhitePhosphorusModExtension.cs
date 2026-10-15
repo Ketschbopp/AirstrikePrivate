@@ -21,6 +21,19 @@ namespace AirstrikeMod
         // Small flame burst where each fragment lands (0 = fire only).
         public int fragmentDamage = 8;
         public ThingDef fragmentDef;
+
+        // Sticky particles: chance that a pawn inside stickyRadiusFactor * radius is
+        // splattered and set alight at the burst (WP clings and keeps burning).
+        public float stickyChance = 0f;
+        public float stickyRadiusFactor = 0.6f;
+        public float stickyFireSize = 0.6f;
+
+        // Lingering burning phosphorus left where fragments land. Burns regardless of
+        // terrain, re-ignites its cell and burns anyone standing in it.
+        public float burnPatchChance = 0f;
+        public IntRange burnPatchTicks = new IntRange(1200, 2400);
+        public int burnPatchDamage = 6;
+        public ThingDef burnPatchDef;
     }
 
     internal static class WhitePhosphorusHelper
@@ -28,6 +41,40 @@ namespace AirstrikeMod
         private static ThingDef _defaultFragment;
         private static ThingDef DefaultFragment =>
             _defaultFragment ??= DefDatabase<ThingDef>.GetNamedSilentFail("ROCKET_WPFragment");
+
+        private static ThingDef _defaultPatch;
+        internal static ThingDef DefaultPatch =>
+            _defaultPatch ??= DefDatabase<ThingDef>.GetNamedSilentFail("ROCKET_WPBurnPatch");
+
+        private static readonly System.Collections.Generic.List<Thing> _tmp = new();
+
+        /// <summary>Set burning WP on every pawn in <paramref name="cell"/> and burn them.</summary>
+        internal static void Splatter(IntVec3 cell, Map map, float fireSize, int burnDamage, Thing instigator)
+        {
+            if (!cell.InBounds(map)) return;
+            _tmp.Clear();
+            _tmp.AddRange(cell.GetThingList(map));
+            foreach (var t in _tmp)
+            {
+                if (t is not Pawn p || p.Dead || p.Destroyed) continue;
+                if (burnDamage > 0)
+                    p.TakeDamage(new DamageInfo(DamageDefOf.Burn, burnDamage, 0.5f, -1f, instigator));
+                if (!p.Destroyed && p.Spawned)
+                    p.TryAttachFire(fireSize, instigator);
+            }
+            _tmp.Clear();
+        }
+
+        internal static void SpawnPatch(WhitePhosphorusModExtension ext, IntVec3 cell, Map map, Thing instigator)
+        {
+            var def = ext.burnPatchDef ?? DefaultPatch;
+            if (def == null || !cell.InBounds(map)) return;
+            var patch = (WhitePhosphorusBurnPatch)ThingMaker.MakeThing(def);
+            patch.lifetime = ext.burnPatchTicks.RandomInRange;
+            patch.damage = ext.burnPatchDamage;
+            patch.instigator = instigator;
+            GenSpawn.Spawn(patch, cell, map);
+        }
 
         public static void Trigger(Def source, IntVec3 center, Map map, float radius, Thing instigator)
         {
@@ -42,6 +89,13 @@ namespace AirstrikeMod
             map.flecks.CreateFleck(flash);
             for (var i = 0; i < 6; i++)
                 WhiteSmoke(c + Rand.InsideUnitCircleVec3 * 1.2f, map, Rand.Range(2.2f, 3.4f), Rand.Range(0f, 360f), Rand.Range(0.2f, 0.6f));
+
+            if (ext.stickyChance > 0f)
+            {
+                foreach (var cell in GenRadial.RadialCellsAround(center, Mathf.Max(1f, radius * ext.stickyRadiusFactor), true))
+                    if (cell.InBounds(map) && Rand.Chance(ext.stickyChance))
+                        Splatter(cell, map, ext.stickyFireSize, ext.fragmentDamage, instigator);
+            }
 
             if (fragDef == null) return;
             var r = Mathf.Max(2f, radius);
@@ -61,6 +115,7 @@ namespace AirstrikeMod
                 frag.fireSize = ext.fireSize;
                 frag.damage = ext.fragmentDamage;
                 frag.instigator = instigator;
+                frag.ext = ext;
                 GenSpawn.Spawn(frag, center, map);
             }
         }
@@ -90,6 +145,7 @@ namespace AirstrikeMod
         public float fireSize = 0.7f;
         public int damage = 8;
         public Thing instigator;
+        public WhitePhosphorusModExtension ext; // not saved: in-flight fragments are seconds long
         private int _ticks;
 
         private float T => Mathf.Clamp01((float)_ticks / Mathf.Max(1, duration));
@@ -132,6 +188,10 @@ namespace AirstrikeMod
                 if (damage > 0)
                     GenExplosion.DoExplosion(cell, map, 0.9f, DamageDefOf.Flame, instigator,
                         damAmount: damage, explosionSound: null, doSoundEffects: false);
+                // Phosphorus sticks to whoever it hits and keeps burning.
+                WhitePhosphorusHelper.Splatter(cell, map, Mathf.Max(0.4f, fireSize), damage, instigator);
+                if (ext != null && ext.burnPatchChance > 0f && Rand.Chance(ext.burnPatchChance))
+                    WhitePhosphorusHelper.SpawnPatch(ext, cell, map, instigator);
                 for (var i = 0; i < 2; i++)
                     WhitePhosphorusHelper.WhiteSmoke(end, map, Rand.Range(1.2f, 1.8f), Rand.Range(0f, 360f), Rand.Range(0.1f, 0.3f));
             }
@@ -156,6 +216,62 @@ namespace AirstrikeMod
             Scribe_Values.Look(ref fireSize, nameof(fireSize), 0.7f);
             Scribe_Values.Look(ref damage, nameof(damage), 8);
             Scribe_Values.Look(ref _ticks, nameof(_ticks));
+            Scribe_References.Look(ref instigator, nameof(instigator));
+        }
+    }
+
+    /// <summary>
+    /// Burning white phosphorus on the ground. It burns whatever the terrain (stone
+    /// included), can't be put out, keeps re-igniting its cell and burns and sets alight
+    /// anyone standing in it, until it burns out.
+    /// </summary>
+    public class WhitePhosphorusBurnPatch : Thing
+    {
+        private const int PULSE = 45;
+
+        public int lifetime = 1800;
+        public int damage = 6;
+        public Thing instigator;
+        private int _age;
+
+        private float Strength => 1f - Mathf.Clamp01((float)_age / Mathf.Max(1, lifetime));
+
+        protected override void Tick()
+        {
+            _age++;
+            if (!Spawned) return;
+            var map = Map;
+            var pos = Position.ToVector3Shifted();
+            if (_age % 6 == 0)
+                WhitePhosphorusHelper.WhiteSmoke(pos + new Vector3(Rand.Range(-0.3f, 0.3f), 0f, Rand.Range(-0.3f, 0.3f)),
+                    map, Rand.Range(0.6f, 1.2f) * (0.5f + Strength), Rand.Range(-25f, 25f), Rand.Range(0.15f, 0.35f));
+            if (_age % 10 == 0)
+                FleckMaker.ThrowFireGlow(pos, map, 0.5f + 0.4f * Strength);
+            if (_age % PULSE == 0)
+            {
+                FireUtility.TryStartFireIn(Position, map, 0.4f, instigator);
+                WhitePhosphorusHelper.Splatter(Position, map, 0.4f,
+                    Mathf.Max(1, Mathf.RoundToInt(damage * (0.4f + 0.6f * Strength))), instigator);
+            }
+            if (_age >= lifetime) Destroy();
+        }
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+            var mat = MaterialPool.MatFrom("Things/Projectile/ROCKET_WPFragment", ShaderDatabase.MoteGlow);
+            var flicker = Find.TickManager.Paused ? 1f : Rand.Range(0.85f, 1.15f);
+            var size = (0.55f + 0.5f * Strength) * flicker;
+            var p = Position.ToVector3Shifted();
+            p.y = AltitudeLayer.MoteLow.AltitudeFor();
+            Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(p, Quaternion.identity, new Vector3(size, 1f, size)), mat, 0);
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref lifetime, nameof(lifetime), 1800);
+            Scribe_Values.Look(ref damage, nameof(damage), 6);
+            Scribe_Values.Look(ref _age, nameof(_age));
             Scribe_References.Look(ref instigator, nameof(instigator));
         }
     }

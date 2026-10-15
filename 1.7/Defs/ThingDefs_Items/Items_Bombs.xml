@@ -357,7 +357,7 @@
     <ThingDef ParentName="MakeableBombBase">
         <defName>ROCKET_Bomb_WhitePhosphorus</defName>
         <label>white phosphorus bomb</label>
-        <description>An aerial bomb filled with white phosphorus. It bursts in a blinding white flash and showers the area with burning fragments trailing thick white smoke. Everything it touches catches fire, and the choking fumes are toxic. Too bulky to be fired from a mortar. Bursts when damaged.</description>
+        <description>An aerial bomb filled with white phosphorus. It bursts in a blinding white flash and showers the area with burning fragments trailing thick white smoke. The phosphorus clings to whatever it hits and burns at nearly 800 degrees: it sets people alight, causes deep burns, and splashes on the ground keep burning on any surface and re-ignite their surroundings until they burn out. The blast leaves a wall of white smoke behind, and its fumes are toxic. Too bulky to be fired from a mortar. Bursts when damaged.</description>
         <stackLimit>25</stackLimit>
         <statBases>
             <MarketValue>150</MarketValue>
@@ -391,6 +391,25 @@
         <modExtensions>
             <li Class="AirstrikeMod.WhitePhosphorusModExtension">
                 <fragmentCount>26</fragmentCount>
+                <fireSize>1.0</fireSize>
+                <!-- Burning particles cling to people and burn deep. -->
+                <fragmentDamage>15</fragmentDamage>
+                <stickyChance>0.5</stickyChance>
+                <stickyRadiusFactor>0.6</stickyRadiusFactor>
+                <stickyFireSize>0.7</stickyFireSize>
+                <!-- Lingering phosphorus: burns on any terrain, can't be put out, re-ignites. -->
+                <burnPatchChance>0.65</burnPatchChance>
+                <burnPatchTicks>1500~3000</burnPatchTicks>
+                <burnPatchDamage>6</burnPatchDamage>
+            </li>
+            <!-- Dense white smoke screen over the whole burst. -->
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>Smoke</damageDef>
+                        <gasType>BlindSmoke</gasType>
+                    </li>
+                </explosions>
             </li>
         </modExtensions>
     </ThingDef>
@@ -631,7 +650,7 @@
         <thingClass>Projectile_Explosive</thingClass>
         <projectile>
             <damageDef>Flame</damageDef>
-            <damageAmountBase>25</damageAmountBase>
+            <damageAmountBase>35</damageAmountBase>
             <speed>30</speed>
             <explosionRadius>12</explosionRadius>
             <explosionChanceToStartFire>1</explosionChanceToStartFire>
@@ -647,6 +666,25 @@
         <modExtensions>
             <li Class="AirstrikeMod.WhitePhosphorusModExtension">
                 <fragmentCount>32</fragmentCount>
+                <fireSize>1.0</fireSize>
+                <!-- Burning particles cling to people and burn deep. -->
+                <fragmentDamage>15</fragmentDamage>
+                <stickyChance>0.5</stickyChance>
+                <stickyRadiusFactor>0.6</stickyRadiusFactor>
+                <stickyFireSize>0.7</stickyFireSize>
+                <!-- Lingering phosphorus: burns on any terrain, can't be put out, re-ignites. -->
+                <burnPatchChance>0.65</burnPatchChance>
+                <burnPatchTicks>1500~3000</burnPatchTicks>
+                <burnPatchDamage>6</burnPatchDamage>
+            </li>
+            <!-- Dense white smoke screen over the whole burst. -->
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>Smoke</damageDef>
+                        <gasType>BlindSmoke</gasType>
+                    </li>
+                </explosions>
             </li>
         </modExtensions>
     </ThingDef>
@@ -661,6 +699,19 @@
         <altitudeLayer>MoteOverhead</altitudeLayer>
         <drawerType>RealtimeOnly</drawerType>
         <drawOffscreen>true</drawOffscreen>
+        <useHitPoints>false</useHitPoints>
+        <selectable>false</selectable>
+    </ThingDef>
+
+    <!-- Lingering burning phosphorus on the ground. -->
+    <ThingDef>
+        <defName>ROCKET_WPBurnPatch</defName>
+        <label>burning phosphorus</label>
+        <thingClass>AirstrikeMod.WhitePhosphorusBurnPatch</thingClass>
+        <category>Ethereal</category>
+        <tickerType>Normal</tickerType>
+        <altitudeLayer>MoteLow</altitudeLayer>
+        <drawerType>RealtimeOnly</drawerType>
         <useHitPoints>false</useHitPoints>
         <selectable>false</selectable>
     </ThingDef>
