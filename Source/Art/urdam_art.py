@@ -1,80 +1,67 @@
-"""Draws the URDAM bomb item textures (Bomb_a..d, 1-4 bombs stacked diagonally): a
-JDAM-style guided bomb - slim olive body, side strakes, grey guidance tail kit with
-fins - with a yellow nuclear band and trefoil.
+"""Draws the URDAM bomb item textures (Bomb_a..d, 1-4 bombs stacked) in the original
+mod's art style (see rocket_style.py): a JDAM-style guided bomb - olive body like the
+high-explosive bomb, side strakes, grey guidance tail kit with X fins, yellow nuclear
+band and trefoil, stencilled markings - tilted 45 degrees like the other bomb icons.
 
     python Source/Art/urdam_art.py <repo root>
 """
-import math
 import sys
 from pathlib import Path
-from PIL import Image, ImageDraw
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from PIL import Image  # noqa: E402
+from rocket_style import Sprite, add_outline, ellipse, poly, rrect, stack, trefoil  # noqa: E402
 
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 OUT = ROOT / "Textures/Things/Item/Resource/Bomb/URDAM"
-S = 4
-SIZE = 128
-BLACK = (0, 0, 0, 255)
+
+OLIVE = (176, 182, 140)
+KIT = (150, 152, 150)
 
 
-def single(length=110):
-    """One bomb pointing up, on a square canvas."""
-    n = SIZE * S
-    im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    L = length * S
-    cx, top = n / 2, (n - L) / 2
-    bot = top + L
-    w = L * 0.085
-    ol = int(2.2 * S)
-    body = (118, 128, 92, 255)
-    kit = (150, 152, 150, 255)
-    # tail fins (X-tail seen from above: two wide, slightly swept)
+def urdam(size=128):
+    """Nose-up URDAM, without outline."""
+    sp = Sprite(size)
+    cx, hw = 64, 10.5
+    nose_top, body_top, body_bot, kit_bot = 12, 34, 92, 116
+
+    # Tail fins (X tail seen side-on) and side strakes, behind the body.
     for sgn in (-1, 1):
-        d.polygon([(cx + sgn * w * 0.8, bot - L * 0.20), (cx + sgn * w * 2.3, bot - L * 0.06),
-                   (cx + sgn * w * 2.3, bot), (cx + sgn * w * 0.8, bot - L * 0.03)],
-                  fill=kit, outline=BLACK, width=ol)
-    # side strakes along the mid body
-    for sgn in (-1, 1):
-        d.polygon([(cx + sgn * w, top + L * 0.38), (cx + sgn * w * 1.55, top + L * 0.46),
-                   (cx + sgn * w * 1.55, top + L * 0.62), (cx + sgn * w, top + L * 0.66)],
-                  fill=kit, outline=BLACK, width=ol)
-    # body + ogive nose
-    d.rounded_rectangle([cx - w, top + L * 0.16, cx + w, bot - L * 0.22], radius=int(w * 0.3),
-                        fill=body, outline=BLACK, width=ol)
-    d.chord([cx - w, top, cx + w, top + L * 0.34], 180, 360, fill=body, outline=BLACK, width=ol)
-    d.rectangle([cx - w + ol, top + L * 0.165, cx + w - ol, top + L * 0.19], fill=body)
-    # guidance tail kit (tapered cone)
-    d.polygon([(cx - w, bot - L * 0.23), (cx + w, bot - L * 0.23),
-               (cx + w * 0.75, bot - L * 0.02), (cx - w * 0.75, bot - L * 0.02)],
-              fill=kit, outline=BLACK, width=ol)
-    d.line([(cx - w * 0.9, bot - L * 0.15), (cx + w * 0.9, bot - L * 0.15)], fill=(95, 95, 95, 255), width=ol)
-    # yellow nuclear band + trefoil
-    d.rectangle([cx - w + ol, top + L * 0.24, cx + w - ol, top + L * 0.29], fill=(245, 205, 20, 255))
-    ty, r = top + L * 0.70, w * 0.62
-    d.ellipse([cx - r, ty - r, cx + r, ty + r], fill=(245, 205, 20, 255), outline=BLACK, width=max(1, ol // 2))
-    for k in range(3):
-        a0 = -90 + k * 120 - 30
-        d.pieslice([cx - r * 0.9, ty - r * 0.9, cx + r * 0.9, ty + r * 0.9], a0, a0 + 60, fill=BLACK)
-    d.ellipse([cx - r * 0.22, ty - r * 0.22, cx + r * 0.22, ty + r * 0.22], fill=BLACK)
-    # highlight
-    d.line([(cx - w * 0.45, top + L * 0.32), (cx - w * 0.45, top + L * 0.66)],
-           fill=(170, 180, 140, 255), width=ol)
-    # match the other bomb icons: tilted 45 degrees, nose to the upper right
-    return im.rotate(-45, resample=Image.BICUBIC).resize((SIZE, SIZE), Image.LANCZOS)
+        sp.flat(poly([(cx + sgn * 6, 96), (cx + sgn * 20, 108), (cx + sgn * 20, 117), (cx + sgn * 6, 113)]),
+                KIT, grad=(1.1, 0.7), axis=(sgn, 0), bounds=(sgn * cx, sgn * (cx + 22)))
+        sp.flat(poly([(cx + sgn * hw, 52), (cx + sgn * (hw + 4.5), 58), (cx + sgn * (hw + 4.5), 76),
+                      (cx + sgn * hw, 80)]), KIT, grad=(1.05, 0.75), axis=(sgn, 0), bounds=(sgn * cx, sgn * (cx + 16)))
+    # Ogive nose + body.
+    sp.cylinder(poly([(cx - hw, body_top + 2), (cx - hw + 1.5, 24), (cx - 6, 16), (cx, nose_top),
+                      (cx + 6, 16), (cx + hw - 1.5, 24), (cx + hw, body_top + 2)]), OLIVE, cx, hw)
+    sp.cylinder(rrect(cx - hw, body_top, cx + hw, body_bot, 2), OLIVE, cx, hw, body_top, body_bot)
+    # Guidance tail kit: tapered cone.
+    sp.cylinder(poly([(cx - hw, body_bot - 1), (cx + hw, body_bot - 1), (cx + 7, kit_bot), (cx - 7, kit_bot)]),
+                KIT, cx, hw)
+    sp.line([(cx - hw + 1, 101), (cx + hw - 1, 101)], col=(95, 95, 95), width=0.8)
+    sp.flat(rrect(cx - 1.2, 98, cx + 1.2, 118, 1), KIT, grad=(1.0, 0.8))
+    # Yellow nuclear band + trefoil + stencils.
+    sp.cylinder(rrect(cx - hw + 0.3, 38, cx + hw - 0.3, 43, 0), (238, 196, 26), cx, hw, gloss=0.1)
+    trefoil(sp, cx, 70, 5.2)
+    sp.stencil(cx - 5, 50, [4, 3], w=1.3, h=1.7, gap=0.7, seed=5)
+    sp.stencil(cx - 4, 81, [3, 4], w=1.3, h=1.7, gap=0.7, seed=6)
+    # Panel seam where the body meets the kit.
+    sp.line([(cx - hw + 0.5, body_bot - 1.5), (cx + hw - 0.5, body_bot - 1.5)], col=(90, 92, 70), width=0.8)
+    return sp
 
 
-def stack(count):
-    """Bombs side by side, offset perpendicular to their 45-degree axis."""
-    one = single(100 if count > 1 else 110)
-    big = Image.new("RGBA", (SIZE * 2, SIZE * 2), (0, 0, 0, 0))
-    step = 14
-    for i in range(count):
-        k = (i - (count - 1) / 2) * step
-        big.alpha_composite(one, (int(SIZE / 2 + k), int(SIZE / 2 + k)))
-    return big.crop((SIZE // 2, SIZE // 2, SIZE // 2 + SIZE, SIZE // 2 + SIZE))
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    single = urdam().image(outline=0)
+    for count, letter in enumerate("abcd", start=1):
+        scale = 1.18 if count == 1 else 0.98
+        s = single.resize((int(128 * scale), int(128 * scale)), Image.LANCZOS)
+        framed = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
+        framed.alpha_composite(s, ((128 - s.width) // 2, (128 - s.height) // 2))
+        tilted = framed.rotate(-45, resample=Image.BICUBIC)
+        add_outline(stack(tilted, count, step=13), 5.0).save(OUT / f"Bomb_{letter}.png", optimize=True)
+    print("wrote", OUT)
 
 
-OUT.mkdir(parents=True, exist_ok=True)
-for i, letter in enumerate("abcd", start=1):
-    stack(i).save(OUT / f"Bomb_{letter}.png", optimize=True)
-print("wrote", OUT)
+if __name__ == "__main__":
+    main()
