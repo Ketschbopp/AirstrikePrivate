@@ -26,6 +26,8 @@ namespace AirstrikeMod
         public float armorPenetration = -1f;
         public float chanceToStartFire;
         public SoundDef explosionSound;
+        // Optional gas left behind by this layer (e.g. BlindSmoke for a smoke screen).
+        public GasType? gasType;
     }
 
     internal static class SecondaryExplosionHelper
@@ -53,6 +55,7 @@ namespace AirstrikeMod
                     damAmount: e.damageAmount,
                     armorPenetration: e.armorPenetration,
                     explosionSound: e.explosionSound,
+                    postExplosionGasType: e.gasType,
                     chanceToStartFire: e.chanceToStartFire);
             }
         }
