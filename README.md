@@ -68,6 +68,17 @@ Cargo capacity: Falcon/Kraken 280 kg, Spirit 2400 kg, Apache 600 kg.
 
 You can hand-edit `1.7/Patches/Vehicle_Patches.xml` to add the gizmos to any other aerial vehicle.
 
+## Combat Extended (optional)
+
+The mod works on vanilla and, optionally, with [Combat Extended](https://github.com/CombatExtended-Continued/CombatExtended). Nothing changes without CE; with CE active, `1.7/Mods/CombatExtended` loads and the DLL switches to CE behaviour (all via reflection - no hard dependency):
+
+- **Bombs** explode through CE's `GenExplosionCE` (CE armour penetration and falloff) and throw CE shrapnel (Explosive, High-Explosive, Neum, Blockbuster bombs). Nuclear, EMP, white phosphorus and pollution effects still apply.
+- **Vanilla mortar shells** in the payload lists work with CE's shell ammo (resolved through CE's `detonateProjectile`).
+- **Cannon strafing** fires CE 20x102mm NATO AP-HE rounds (the CE autocannon calibre) from the aircraft's altitude, consuming CE ammo (one cartridge per bullet). **Missile strafing** fires a CE missile (450 mm penetrator, small HE burst, smoke trail).
+- **Aircraft armour** converted to CE units (jets 6 mm / 12 MPa, Apache 10 mm / 22 MPa); bombs and missiles get inventory **Bulk**.
+
+> Combat Extended has no RimWorld 1.7 release yet (it currently supports 1.6). The integration is written against CE's current source and activates once CE runs on 1.7.
+
 ## New items
 
 - **Explosive / High-Explosive / Incendiary / Antigrain bomb** (`ROCKET_Bomb_*`) - large air-dropped bombs, craftable at the machining table. Drop in Bombs category.

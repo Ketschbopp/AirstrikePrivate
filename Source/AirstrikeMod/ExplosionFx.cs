@@ -17,6 +17,14 @@ namespace AirstrikeMod
         {
             if (pp == null || map == null || !pos.InBounds(map)) return;
 
+            // Combat Extended: CE armour/falloff + shrapnel. CE's explosion doesn't go
+            // through vanilla GenExplosion, so run our explosion hooks ourselves.
+            if (CECompat.TryExplode(projectileDef, pp, pos, map, instigator))
+            {
+                ExplosionHooks.Run(projectileDef, pos, map, pp.explosionRadius, instigator);
+                return;
+            }
+
             if (pp.explosionEffect != null)
             {
                 var effecter = pp.explosionEffect.Spawn();
