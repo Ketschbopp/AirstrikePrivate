@@ -1,9 +1,11 @@
-"""Draws the URDAM bomb item textures (Bomb_a..d, 1-4 bombs stacked) in the original
-mod's art style (see rocket_style.py): a JDAM-style guided bomb - olive body like the
-high-explosive bomb, side strakes, grey guidance tail kit with X fins, yellow nuclear
-band and trefoil, stencilled markings - tilted 45 degrees like the other bomb icons.
+"""Draws the tactical nuclear bomb item textures (Bomb_a..d, 1-4 bombs stacked) in the
+original mod's art style (see rocket_style.py): olive body like the high-explosive bomb,
+side strakes, grey tail kit with X fins, yellow nuclear band and trefoil, stencilled
+markings - tilted 45 degrees like the other bomb icons.
 
-    python Source/Art/urdam_art.py <repo root>
+(Originally drawn for the URDAM; the two textures were swapped to fit better.)
+
+    python Source/Art/tactical_nuke_art.py <repo root>
 """
 import sys
 from pathlib import Path
@@ -13,14 +15,14 @@ from PIL import Image  # noqa: E402
 from rocket_style import Sprite, add_outline, ellipse, poly, rrect, stack, trefoil  # noqa: E402
 
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-OUT = ROOT / "Textures/Things/Item/Resource/Bomb/URDAM"
+OUT = ROOT / "Textures/Things/Item/Resource/Bomb/TacticalNuke"
 
 OLIVE = (176, 182, 140)
 KIT = (150, 152, 150)
 
 
-def urdam(size=128):
-    """Nose-up URDAM, without outline."""
+def nuke(size=128):
+    """Nose-up tactical nuke, without outline."""
     sp = Sprite(size)
     cx, hw = 64, 10.5
     nose_top, body_top, body_bot, kit_bot = 12, 34, 92, 116
@@ -52,7 +54,7 @@ def urdam(size=128):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    single = urdam().image(outline=0)
+    single = nuke().image(outline=0)
     for count, letter in enumerate("abcd", start=1):
         scale = 1.18 if count == 1 else 0.98
         s = single.resize((int(128 * scale), int(128 * scale)), Image.LANCZOS)
