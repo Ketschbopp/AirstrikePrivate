@@ -20,7 +20,7 @@ namespace AirstrikeMod
         private bool loiterEnabled = true;
 
         /// <summary>The hovering skyfaller currently holding this vehicle, if any.</summary>
-        public VehicleSkyfaller_Loiter Loiter => Vehicle.ParentHolder as VehicleSkyfaller_Loiter;
+        public VehicleSkyfaller_Loiter Loiter => VehicleSkyfaller_Loiter.For(Vehicle);
 
         /// <summary>Map the sortie departs from: the hover's map while airborne.</summary>
         protected Map OriginMap => Loiter?.Map ?? Vehicle.Map;
@@ -436,6 +436,13 @@ namespace AirstrikeMod
             if (loiter is { Spawned: true })
             {
                 onPicked(loiter.Map);
+                return;
+            }
+            if (Vehicle.Map == null)
+            {
+                // In flight without a hover to launch from: nothing to target from.
+                Messages.Message("ROCKET_NotWhileInFlight".Translate(),
+                    MessageTypeDefOf.RejectInput, false);
                 return;
             }
             var maps = Find.Maps;

@@ -73,6 +73,7 @@ namespace AirstrikeMod
                 return;
             }
 
+            if (destMap == null) return; // never switch the view to "no map" (world)
             var originalMap = Current.Game.CurrentMap;
             if (Current.Game.CurrentMap != destMap)
                 Current.Game.CurrentMap = destMap;

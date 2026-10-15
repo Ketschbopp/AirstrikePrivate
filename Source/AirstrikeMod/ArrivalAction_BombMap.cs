@@ -156,8 +156,11 @@ namespace AirstrikeMod
 
         // Called by both the world-flight arrival path and the in-place
         // hover-launch path; returns false if validation/creation failed.
-        public bool SpawnBombingSkyfaller(Map map)
+        public bool SpawnBombingSkyfaller(Map map) => SpawnBombingSkyfaller(map, out _);
+
+        public bool SpawnBombingSkyfaller(Map map, out VehicleSkyfaller_Bombing spawned)
         {
+            spawned = null;
             if (map == null) return false;
             if (segments == null || segments.Count == 0
                 || segments[0].bombCells == null || segments[0].bombCells.Count == 0)
@@ -236,6 +239,7 @@ namespace AirstrikeMod
             }
 
             GenSpawn.Spawn(skyfaller, spawnCell, map, spawnRot);
+            spawned = skyfaller;
             return true;
         }
 
