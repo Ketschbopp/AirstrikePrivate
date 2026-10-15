@@ -101,6 +101,7 @@
     <ROCKET_ReturnToPad>Return to base</ROCKET_ReturnToPad>
     <ROCKET_ReturnToPadDesc>Fly back and land where the aircraft originally took off.</ROCKET_ReturnToPadDesc>
     <ROCKET_NoLandingSpot>No clear landing spot.</ROCKET_NoLandingSpot>
+    <ROCKET_NotWhileInFlight>Not available while the aircraft is in flight. Wait until it is hovering or has landed.</ROCKET_NotWhileInFlight>
     <ROCKET_SwitchWeapon>Weapon: {0}</ROCKET_SwitchWeapon>
     <ROCKET_SwitchWeaponDesc>Switch the strafing weapon used for the next run.</ROCKET_SwitchWeaponDesc>
 </LanguageData>

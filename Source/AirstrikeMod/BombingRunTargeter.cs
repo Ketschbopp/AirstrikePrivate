@@ -72,6 +72,12 @@ namespace AirstrikeMod
 
         public override void ProcessInputEvents()
         {
+            if (map == null)
+            {
+                // Map went away (or targeting began without one): bail out cleanly.
+                if (IsTargeting) StopTargeting();
+                return;
+            }
             HandleRotationShortcuts();
 
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
@@ -185,6 +191,12 @@ namespace AirstrikeMod
 
         public override void TargeterUpdate()
         {
+            if (map == null)
+            {
+                // Map went away (or targeting began without one): bail out cleanly.
+                if (IsTargeting) StopTargeting();
+                return;
+            }
             // locked targets: faded rectangles + connecting lines
             for (var i = 0; i < lockedSegments.Count; i++)
             {

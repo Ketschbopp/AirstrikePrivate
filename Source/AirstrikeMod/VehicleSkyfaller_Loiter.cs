@@ -30,6 +30,33 @@ namespace AirstrikeMod
 
         private int _ticks;
         private bool _landing;
+
+        // VF's skyfaller container has no owner, so vehicle.ParentHolder can't find us.
+        private static readonly Dictionary<VehiclePawn, VehicleSkyfaller_Loiter> ByVehicle = new();
+
+        /// <summary>The spawned loiter currently holding <paramref name="v"/>, or null.</summary>
+        public static VehicleSkyfaller_Loiter For(VehiclePawn v)
+        {
+            if (v == null || !ByVehicle.TryGetValue(v, out var l)) return null;
+            if (l is { Spawned: true, Destroyed: false } && l.vehicle == v) return l;
+            ByVehicle.Remove(v);
+            return null;
+        }
+
+        internal static IEnumerable<VehicleSkyfaller_Loiter> AllSpawned => ByVehicle.Values;
+
+        public override void SpawnSetup(Map map, bool respawningAfterLoad)
+        {
+            base.SpawnSetup(map, respawningAfterLoad);
+            if (vehicle != null) ByVehicle[vehicle] = this;
+        }
+
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
+        {
+            if (vehicle != null && ByVehicle.TryGetValue(vehicle, out var l) && l == this)
+                ByVehicle.Remove(vehicle);
+            base.DeSpawn(mode);
+        }
         private CompRotorSpinUp _rotorSpinUp;
         private bool _rotorSpinUpLookedUp;
 
@@ -52,6 +79,16 @@ namespace AirstrikeMod
                 pos.z += Altitude;
                 return pos;
             }
+        }
+
+        /// <summary>True when <paramref name="mapPos"/> falls on the drawn aircraft.</summary>
+        public bool SpriteContains(Vector3 mapPos)
+        {
+            var size = vehicle?.VehicleGraphic?.data?.drawSize ?? new Vector2(3f, 3f);
+            // Generous but not the whole (mostly transparent) texture square.
+            var half = Mathf.Max(1f, Mathf.Min(size.x, size.y) * 0.35f);
+            var c = DrawPos;
+            return Mathf.Abs(mapPos.x - c.x) <= half && Mathf.Abs(mapPos.z - c.z) <= half;
         }
 
         public void Notify_EnteredLoiter()
@@ -125,8 +162,7 @@ namespace AirstrikeMod
         public void HandOff(ArrivalAction_BombMap arrival)
         {
             if (_landing || !Spawned) return;
-            if (!arrival.SpawnBombingSkyfaller(Map)) return;
-            var next = vehicle.ParentHolder as VehicleSkyfaller;
+            if (!arrival.SpawnBombingSkyfaller(Map, out var next)) return;
             Destroy();
             // Our DeSpawn released the vehicle's sustainer target; hand it to the new skyfaller.
             if (next != null) vehicle.SetSustainerTarget(next);

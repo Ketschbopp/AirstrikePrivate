@@ -61,6 +61,12 @@ namespace AirstrikeMod
 
         public override void ProcessInputEvents()
         {
+            if (map == null)
+            {
+                // Map went away (or targeting began without one): bail out cleanly.
+                if (IsTargeting) StopTargeting();
+                return;
+            }
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 var cursorCell = UI.MouseCell();
@@ -139,6 +145,12 @@ namespace AirstrikeMod
 
         public override void TargeterUpdate()
         {
+            if (map == null)
+            {
+                // Map went away (or targeting began without one): bail out cleanly.
+                if (IsTargeting) StopTargeting();
+                return;
+            }
             for (var i = 0; i < lockedTargets.Count; i++) 
                 GenDraw.DrawRadiusRing(lockedTargets[i], radius);
             DrawChainLines();
