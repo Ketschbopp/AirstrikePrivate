@@ -364,6 +364,7 @@
 					<li>ROCKET_Bomb_Incendiary</li>
 					<li>ROCKET_Bomb_Neum</li>
 					<li>ROCKET_Bomb_Smoke</li>
+					<li>ROCKET_Bomb_WhitePhosphorus</li>
 					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>
@@ -388,6 +389,7 @@
 					<li>ROCKET_Bomb_Incendiary</li>
 					<li>ROCKET_Bomb_Neum</li>
 					<li>ROCKET_Bomb_Smoke</li>
+					<li>ROCKET_Bomb_WhitePhosphorus</li>
 					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>

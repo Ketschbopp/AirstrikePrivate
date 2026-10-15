@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    <!-- Only loaded with Biotech (see LoadFolders.xml): tox gas does nothing without it. -->
+    <ThingDef ParentName="MakeableBombBase">
+        <defName>ROCKET_Bomb_ToxGas</defName>
+        <label>toxic gas bomb</label>
+        <description>An aerial bomb that bursts into a dense cloud of tox gas instead of a blast. The gas lingers over a wide area, poisoning and incapacitating anyone who breathes it without protection. Ideal for flushing defenders out of positions without destroying the buildings. Bursts when damaged.</description>
+        <stackLimit>25</stackLimit>
+        <statBases>
+            <MarketValue>130</MarketValue>
+            <Mass>6</Mass>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/ToxGas</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+        </graphicData>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>9</explosiveRadius>
+                <explosiveDamageType>Smoke</explosiveDamageType>
+                <postExplosionGasType>ToxGas</postExplosionGasType>
+                <explosiveExpandPerStackcount>0.4</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <wickTicks>30~60</wickTicks>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_ToxGas</projectileWhenLoaded>
+        <costList>
+            <Steel>15</Steel>
+            <Chemfuel>20</Chemfuel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <researchPrerequisite>Fabrication</researchPrerequisite>
+        </recipeMaker>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_ToxGas</defName>
+        <label>toxic gas bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellHighExplosive</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Smoke</damageDef>
+            <speed>30</speed>
+            <explosionRadius>9</explosionRadius>
+            <postExplosionGasType>ToxGas</postExplosionGasType>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+        </projectile>
+    </ThingDef>
+</Defs>
