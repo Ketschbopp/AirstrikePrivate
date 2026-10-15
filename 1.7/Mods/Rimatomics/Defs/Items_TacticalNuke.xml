@@ -5,12 +5,13 @@
          Built around Rimatomics' FissionWarhead. Rimatomics detonates an armed warhead as
          a Yield-55 NuclearStrike: everything within 25 cells is vaporised, roofs are
          stripped to 55 cells, then a 55-radius Bomb_PlasmaToroid blast deals 600 damage
-         with 100 armor penetration. This bomb is 15% of that (radius and damage), plus an
+         with 100 armor penetration. This bomb is scaled down to a 30-cell blast radius
+         (30 / 55 = ~54.5% of the warhead, applied to radius and damage alike), plus an
          EMP pulse over the blast radius:
 
-             blast radius   55   -> 8.25        damage    600 -> 90
-             vaporise core  25   -> 3.75        armor pen 100 -> 15
-             roof strip     55   -> 8.25        cloud     1.2 -> 0.18 scale
+             blast radius   55   -> 30          damage    600 -> 327
+             vaporise core  25   -> 13.6        armor pen 100 -> 54.5
+             roof strip     55   -> 30          cloud     1.2 -> 0.65 scale
 
          No CompExplosive: like the Rimatomics warhead, it does not cook off when shot. -->
     <ThingDef ParentName="BombBase">
@@ -24,7 +25,7 @@
             <MarketValue>16000</MarketValue>
             <Mass>60</Mass>
             <Flammability>0</Flammability>
-            <DeteriorationRate>0.5</DeteriorationRate>
+            <DeteriorationRate>0</DeteriorationRate>
         </statBases>
         <graphicData>
             <texPath>Things/Item/Resource/Bomb/TacticalNuke</texPath>
@@ -57,6 +58,106 @@
     <ThingDef ParentName="BaseBullet">
         <defName>ROCKET_Bullet_Bomb_TacticalNuke</defName>
         <label>tactical nuclear bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellAntigrainWarhead</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Bomb_PlasmaToroid</damageDef>
+            <damageAmountBase>327</damageAmountBase>
+            <armorPenetrationBase>54.5</armorPenetrationBase>
+            <speed>30</speed>
+            <explosionRadius>30</explosionRadius>
+            <explosionChanceToStartFire>1</explosionChanceToStartFire>
+            <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
+            <postExplosionSpawnThingDef>Filth_Ash</postExplosionSpawnThingDef>
+            <postExplosionSpawnChance>0.6</postExplosionSpawnChance>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>Explosion_GiantBomb</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            <explosionEffect>GiantExplosion</explosionEffect>
+            <screenShakeFactor>0.6</screenShakeFactor>
+        </projectile>
+        <modExtensions>
+            <li Class="AirstrikeMod.NuclearDetonationModExtension">
+                <vaporizeRadius>13.6</vaporizeRadius>
+                <roofStripRadius>30</roofStripRadius>
+                <detonationSound>nuclearBlastInMap</detonationSound>
+                <cloudMote>Mote_NukeCloud</cloudMote>
+                <cloudScale>0.65</cloudScale>
+            </li>
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>EMP</damageDef>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
+    </ThingDef>
+    <!-- URDAM: the original (15%-scale) tactical nuke as a JDAM-style guided bomb. Same
+         detonation as the tactical nuke had before it was scaled up to 30 cells:
+
+             blast radius   55   -> 8.25        damage    600 -> 90
+             vaporise core  25   -> 3.75        armor pen 100 -> 15
+             roof strip     55   -> 8.25        cloud     1.2 -> 0.18 scale
+
+         plus EMP over the blast radius. The guidance kit (GuidedBombModExtension)
+         removes the aircraft's scatter, so it always lands on the aimed cell. -->
+    <ThingDef ParentName="BombBase">
+        <defName>ROCKET_Bomb_URDAM</defName>
+        <label>URDAM</label>
+        <description>A Rimatomics fission warhead dialled down to a low tactical yield and fitted with a satellite-guided tail kit, like a JDAM. The guidance kit steers it onto the exact cell it was aimed at, however shaky the pilot. The detonation vaporises everything at ground zero, blows the roofs off nearby buildings, scorches the area with a plasma blast and releases an electromagnetic pulse. The warhead is safed until release: it will not detonate if damaged.</description>
+        <stackLimit>5</stackLimit>
+        <techLevel>Spacer</techLevel>
+        <statBases>
+            <MaxHitPoints>300</MaxHitPoints>
+            <MarketValue>16000</MarketValue>
+            <Mass>60</Mass>
+            <Flammability>0</Flammability>
+            <DeteriorationRate>0</DeteriorationRate>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/URDAM</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+            <drawSize>1.2</drawSize>
+        </graphicData>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_URDAM</projectileWhenLoaded>
+        <costList>
+            <FissionWarhead>1</FissionWarhead>
+            <Steel>60</Steel>
+            <ComponentIndustrial>4</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+            <effectWorking>Smith</effectWorking>
+            <soundWorking>Recipe_Machining</soundWorking>
+            <workAmount>6000</workAmount>
+            <workSkill>Crafting</workSkill>
+            <recipeUsers>
+                <li>TableMachining</li>
+            </recipeUsers>
+            <skillRequirements>
+                <Crafting>10</Crafting>
+            </skillRequirements>
+            <researchPrerequisite>AdvancedFabrication</researchPrerequisite>
+            <displayPriority>98</displayPriority>
+        </recipeMaker>
+        <modExtensions>
+            <li Class="AirstrikeMod.GuidedBombModExtension">
+                <scatterMultiplier>0</scatterMultiplier>
+            </li>
+        </modExtensions>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_URDAM</defName>
+        <label>URDAM</label>
         <graphicData>
             <texPath>Things/Projectile/ShellAntigrainWarhead</texPath>
             <graphicClass>Graphic_Single</graphicClass>

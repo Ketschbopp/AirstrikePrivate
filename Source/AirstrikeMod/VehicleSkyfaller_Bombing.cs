@@ -853,9 +853,12 @@ namespace AirstrikeMod
         /// </summary>
         private IntVec3 ApplyScatter(IntVec3 cell)
         {
-            if (scatter <= 0f) return cell;
+            var effective = scatter;
+            var guided = ordinance?.GetModExtension<GuidedBombModExtension>();
+            if (guided != null) effective *= guided.scatterMultiplier;
+            if (effective <= 0f) return cell;
             var angle = Rand.Range(0f, 360f) * Mathf.Deg2Rad;
-            var distance = Rand.Range(0f, scatter);
+            var distance = Rand.Range(0f, effective);
             var dx = Mathf.RoundToInt(Mathf.Cos(angle) * distance);
             var dz = Mathf.RoundToInt(Mathf.Sin(angle) * distance);
             var offset = new IntVec3(cell.x + dx, cell.y, cell.z + dz);
