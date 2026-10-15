@@ -1,4 +1,5 @@
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace AirstrikeMod
@@ -17,9 +18,13 @@ namespace AirstrikeMod
         {
             if (pp == null || map == null || !pos.InBounds(map)) return;
 
+            // Bunker busters punch through roofs / rock before they detonate.
+            BunkerBusterHelper.Penetrate(projectileDef, pos, map);
+            var damageMult = AirstrikeMod.Settings?.bombDamageMultiplier ?? 1f;
+
             // Combat Extended: CE armour/falloff + shrapnel. CE's explosion doesn't go
             // through vanilla GenExplosion, so run our explosion hooks ourselves.
-            if (CECompat.TryExplode(projectileDef, pp, pos, map, instigator))
+            if (CECompat.TryExplode(projectileDef, pp, pos, map, instigator, damageMult))
             {
                 ExplosionHooks.Run(projectileDef, pos, map, pp.explosionRadius, instigator);
                 return;
@@ -42,7 +47,7 @@ namespace AirstrikeMod
                 radius: pp.explosionRadius,
                 damType: pp.damageDef ?? DamageDefOf.Bomb,
                 instigator: instigator,
-                damAmount: pp.GetDamageAmount((Thing)null),
+                damAmount: Mathf.RoundToInt(pp.GetDamageAmount((Thing)null) * damageMult),
                 armorPenetration: pp.GetArmorPenetration(), // same as Projectile_Explosive.Explode
                 explosionSound: pp.soundExplode,
                 weapon: null,

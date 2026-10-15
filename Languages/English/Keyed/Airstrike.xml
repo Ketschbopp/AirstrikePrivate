@@ -6,6 +6,22 @@
     <ROCKET_TabGeneral>General</ROCKET_TabGeneral>
     <ROCKET_TabDebug>Debug</ROCKET_TabDebug>
     <ROCKET_FuelScaleLabel>Airstrike fuel cost: {0}% of one world-tile flight</ROCKET_FuelScaleLabel>
+    <ROCKET_HoverFuelLabel>Hover fuel use: {0}%</ROCKET_HoverFuelLabel>
+    <ROCKET_HoverFuelDesc>How fast aircraft that stay airborne after a strafing run (Apache) burn fuel. 0% makes hovering free.</ROCKET_HoverFuelDesc>
+    <ROCKET_StayAirborneDefaultLabel>Stay airborne after strafing by default</ROCKET_StayAirborneDefaultLabel>
+    <ROCKET_StayAirborneDefaultDesc>Default for the "Stay airborne" toggle on aircraft that can hover. Aircraft whose toggle you already changed keep their own setting.</ROCKET_StayAirborneDefaultDesc>
+    <ROCKET_SettingsWeaponsHeader>Weapons</ROCKET_SettingsWeaponsHeader>
+    <ROCKET_BombDamageLabel>Bomb damage: {0}%</ROCKET_BombDamageLabel>
+    <ROCKET_BombDamageDesc>Multiplies the damage (and, with Combat Extended, armor penetration) of every bomb dropped from an aircraft. Blast radius is unchanged.</ROCKET_BombDamageDesc>
+    <ROCKET_ScatterLabel>Bomb and strafing scatter: {0}%</ROCKET_ScatterLabel>
+    <ROCKET_ScatterDesc>Multiplies how far bombs and strafing rounds land from their aim point. 0% is pinpoint accurate.</ROCKET_ScatterDesc>
+    <ROCKET_StrafingAmmoLabel>Strafing ammo use: {0}%</ROCKET_StrafingAmmoLabel>
+    <ROCKET_StrafingAmmoDesc>Multiplies the ammunition a strafing run takes from cargo. 0% makes strafing free.</ROCKET_StrafingAmmoDesc>
+    <ROCKET_AllowNuclearLabel>Allow nuclear weapons</ROCKET_AllowNuclearLabel>
+    <ROCKET_AllowNuclearDesc>When off, nuclear bombs (URDAM, tactical nuke) can't be selected or dropped.</ROCKET_AllowNuclearDesc>
+    <ROCKET_WPLingeringLabel>White phosphorus leaves burning patches</ROCKET_WPLingeringLabel>
+    <ROCKET_WPLingeringDesc>When off, white phosphorus bombs only explode and set fires; they don't leave lingering burning phosphorus on the ground.</ROCKET_WPLingeringDesc>
+    <ROCKET_ResetSettings>Reset to defaults</ROCKET_ResetSettings>
     <ROCKET_DebugTabBlurb>Diagnostic overlays for tuning flight paths and waypoint placement. Most players can leave these off.</ROCKET_DebugTabBlurb>
     <ROCKET_DebugDrawFlightPathLabel>Draw flight path</ROCKET_DebugDrawFlightPathLabel>
     <ROCKET_DebugDrawFlightPathDesc>While a multi-target sortie is in the air, draw the spline path it follows as a polyline on the map. Useful for tuning curve tension and waypoint placement.</ROCKET_DebugDrawFlightPathDesc>

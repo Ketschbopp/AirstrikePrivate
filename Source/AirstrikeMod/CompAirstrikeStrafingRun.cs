@@ -47,7 +47,8 @@ namespace AirstrikeMod
 
         private int RoundCount => Math.Max(0, Weapon.runLength);
         public int AmmoCountFor(StrafingWeapon w) =>
-            Math.Max(0, w.runLength) * Math.Max(1, w.ammoPerRound);
+            Mathf.CeilToInt(Math.Max(0, w.runLength) * Math.Max(1, w.ammoPerRound)
+                            * (AirstrikeMod.Settings?.strafingAmmoMultiplier ?? 1f));
         private int AmmoCount => AmmoCountFor(Weapon);
 
         protected override int RequiredShells => 0;

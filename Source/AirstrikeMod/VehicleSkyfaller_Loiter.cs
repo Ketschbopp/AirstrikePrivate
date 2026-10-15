@@ -115,7 +115,8 @@ namespace AirstrikeMod
         {
             var fuel = vehicle.CompFueledTravel;
             if (fuel == null) return;
-            fuel.ConsumeFuel(fuel.ConsumptionRatePerTickRaw * FUEL_INTERVAL * Mathf.Max(0f, fuelMultiplier));
+            fuel.ConsumeFuel(fuel.ConsumptionRatePerTickRaw * FUEL_INTERVAL * Mathf.Max(0f, fuelMultiplier)
+                             * (AirstrikeMod.Settings?.hoverFuelMultiplier ?? 1f));
             if (!fuel.EmptyTank) return;
 
             Messages.Message("ROCKET_LoiterOutOfFuel".Translate(vehicle.LabelShortCap),

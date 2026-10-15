@@ -47,7 +47,11 @@ If you have more than one map loaded, clicking a strike gizmo opens a menu to pi
 
 ### Settings
 
-- **General** tab: fuel cost percentage for an airstrike sortie.
+- **General** tab:
+  - Fuel cost percentage for an airstrike sortie, and hover fuel use for aircraft that stay airborne (0% = free).
+  - Whether hover-capable aircraft stay airborne after strafing by default (each aircraft's own toggle still overrides it).
+  - **Weapons**: bomb damage multiplier (25-300%, also scales CE armour penetration), bomb and strafing scatter multiplier (0% = pinpoint), strafing ammo use (0% = free), allow nuclear weapons (off hides the URDAM and tactical nuke from the payload picker), and white phosphorus lingering burn patches on/off.
+  - **Reset to defaults** button.
 - **Debug** tab: draw the spline flight path in white for tuning.
 
 ## Vehicles that get the gizmos
@@ -73,7 +77,7 @@ You can hand-edit `1.7/Patches/Vehicle_Patches.xml` to add the gizmos to any oth
 
 The mod works on vanilla and, optionally, with [Combat Extended](https://github.com/CombatExtended-Continued/CombatExtended). Nothing changes without CE; with CE active, `1.7/Mods/CombatExtended` loads and the DLL switches to CE behaviour (all via reflection - no hard dependency):
 
-- **Bombs** explode through CE's `GenExplosionCE` (CE armour penetration and falloff) and throw CE shrapnel (Explosive, High-Explosive, Neum, Blockbuster bombs). Nuclear, EMP, white phosphorus and pollution effects still apply.
+- **Bombs** explode through CE's `GenExplosionCE` (CE armour penetration and falloff) and throw CE shrapnel (Explosive, High-Explosive, Neum, Blockbuster, bunker buster bombs). Nuclear, EMP, white phosphorus and pollution effects still apply.
 - **Vanilla mortar shells** in the payload lists work with CE's shell ammo (resolved through CE's `detonateProjectile`).
 - **Cannon strafing** uses CE's 20x102mm NATO ammo set (the CE autocannon calibre): the Payload tab offers one cannon choice per ammo type - **AP, Incendiary, AP-HE, Sabot** - each firing its own CE round and consuming its own cartridges (one per bullet). Compatible with CE's **generic ammo** option (the choices then use the generic autocannon ammo) and its **ammo system off** option (strafing becomes free). Any strafing weapon can opt in with `<ammoSet>` (comp or `weapons` entry).
 - **Missile strafing** fires a CE missile (450 mm penetrator, small HE burst, smoke trail).
@@ -86,6 +90,7 @@ The mod works on vanilla and, optionally, with [Combat Extended](https://github.
 - **Explosive / High-Explosive / Incendiary / Antigrain bomb** (`ROCKET_Bomb_*`) - large air-dropped bombs, craftable at the machining table. Drop in Bombs category.
 - **Blockbuster bomb** (`ROCKET_Bomb_Blockbuster`) - bigger and heavier than the high-explosive bomb: 250 damage, 10.9 radius (HE: 150 / 7.8).
 - **Neum bomb** (`ROCKET_Bomb_Neum`) - made with uranium. Same blast as the high-explosive bomb, plus an EMP pulse and fire from the same detonation.
+- **Bunker buster** (`ROCKET_Bomb_BunkerBuster`) - long penetrating bomb (Advanced Fabrication). The only bomb that can be aimed at roofed cells and overhead mountain: before it detonates, constructed and thin rock roofs within 2.9 cells cave in on whatever is below, overhead mountain within 2.9 cells is punched out cleanly (no collapsed rock), and natural rock walls within 1.5 cells are smashed. Then a 5.9-radius blast for 260 damage / 0.6 armour penetration (`AirstrikeMod.BunkerBusterModExtension`).
 - **Smoke bomb** (`ROCKET_Bomb_Smoke`) - bursts into a radius-8 cloud of blinding smoke.
 - **White phosphorus bomb** (`ROCKET_Bomb_WhitePhosphorus`) - a 12-radius incendiary burst that sets everything alight and releases tox gas (harmful with Biotech). Bursts in a white flash and throws burning fragments outward on thick white smoke trails. Like real WP it clings and keeps burning: pawns caught in the burst or hit by fragments are set alight and take deep burns, and many fragments leave burning phosphorus that burns on any terrain, can't be put out and re-ignites its cell for 25-50 seconds. Leaves a blinding white smoke screen (`AirstrikeMod.WhitePhosphorusModExtension`).
 - **Toxic gas bomb** (`ROCKET_Bomb_ToxGas`, **requires Biotech**) - no blast; fills a radius-9 area with tox gas. Lives in `1.7/Mods/Biotech`, loaded only when Biotech is active.
@@ -220,6 +225,10 @@ Vanilla explosions carry a single damage type. Add `AirstrikeMod.SecondaryExplos
 ```
 
 `AirstrikeMod.Projectile_AirstrikeMissile` registers its own def as the damage weapon, so Vehicle Framework's `Vehicles.VehicleDamageMultiplierDefModExtension` on the projectile def scales its damage against vehicles.
+
+### Penetrating bombs: `BunkerBusterModExtension`
+
+On a bomb's projectile def. The bomb can be targeted at roofed cells, and before the explosion it collapses thin roofs and removes thick roofs within `roofBreakRadius` (default 2.9) and destroys natural rock within `rockBreakRadius` (default 1.5).
 
 ### Nuclear effects: `NuclearDetonationModExtension`
 
