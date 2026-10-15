@@ -31,7 +31,7 @@
 		<vehicleStats>
 			<Mass>720</Mass>
 			<MoveSpeed>1.5</MoveSpeed>
-			<CargoCapacity>150</CargoCapacity>
+			<CargoCapacity>600</CargoCapacity>
 			<RepairRate>1</RepairRate>
 			<FlightSpeed>11.5</FlightSpeed>
 		</vehicleStats>
@@ -396,6 +396,20 @@
 				<spreadCells>1</spreadCells>
 				<skillScatter>2</skillScatter>
 				<inPlaceSortie>true</inPlaceSortie>
+				<weapons>
+					<li>
+						<label>missiles</label>
+						<projectileDef>ROCKET_Bullet_StrafingMissile</projectileDef>
+						<ammoDef>ROCKET_StrafingMissile</ammoDef>
+						<ammoPerRound>1</ammoPerRound>
+						<bulletsPerRound>1</bulletsPerRound>
+						<spreadCells>0</spreadCells>
+						<runLength>6</runLength>
+						<runWidth>1</runWidth>
+						<fireOriginOffset>5</fireOriginOffset>
+						<fireSound>InfernoCannon_Fire</fireSound>
+					</li>
+				</weapons>
 			</li>
 			<li Class="AirstrikeMod.CompProperties_AirstrikeLocalFlight">
 				<skyfallerBombing>ROCKET_BombingPass</skyfallerBombing>

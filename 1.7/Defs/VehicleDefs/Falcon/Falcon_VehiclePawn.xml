@@ -30,7 +30,7 @@
 		<vehicleStats>
 			<Mass>280</Mass>
 			<MoveSpeed>2</MoveSpeed>
-			<CargoCapacity>70</CargoCapacity>
+			<CargoCapacity>280</CargoCapacity>
 			<RepairRate>0.5</RepairRate>
 			<FlightSpeed>60</FlightSpeed>
 		</vehicleStats>
@@ -363,6 +363,7 @@
 					<li>ROCKET_Bomb_Blockbuster</li>
 					<li>ROCKET_Bomb_Incendiary</li>
 					<li>ROCKET_Bomb_Neum</li>
+					<li>ROCKET_Bomb_Smoke</li>
 					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>
@@ -386,6 +387,7 @@
 					<li>ROCKET_Bomb_Blockbuster</li>
 					<li>ROCKET_Bomb_Incendiary</li>
 					<li>ROCKET_Bomb_Neum</li>
+					<li>ROCKET_Bomb_Smoke</li>
 					<li>ROCKET_Bomb_Antigrain</li>
 				</ordinance>
 			</li>
@@ -404,6 +406,20 @@
 				<bulletsPerRound>4</bulletsPerRound>
 				<spreadCells>1</spreadCells>
 				<skillScatter>2</skillScatter>
+				<weapons>
+					<li>
+						<label>missiles</label>
+						<projectileDef>ROCKET_Bullet_StrafingMissile</projectileDef>
+						<ammoDef>ROCKET_StrafingMissile</ammoDef>
+						<ammoPerRound>1</ammoPerRound>
+						<bulletsPerRound>1</bulletsPerRound>
+						<spreadCells>0</spreadCells>
+						<runLength>10</runLength>
+						<runWidth>1</runWidth>
+						<fireOriginOffset>6</fireOriginOffset>
+						<fireSound>InfernoCannon_Fire</fireSound>
+					</li>
+				</weapons>
 			</li>
 			<li Class="Vehicles.CompProperties_FueledTravel">
 				<fuelType>Chemfuel</fuelType>

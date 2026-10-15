@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Vehicles;
@@ -17,21 +18,39 @@ namespace AirstrikeMod
 
         private Action _startDelegate;
 
+        private int selectedWeaponIndex;
+
         public override bool RequiresOrdinance => false;
 
-        private int RoundCount => Math.Max(0, Props.runLength);
-        private int AmmoCount => RoundCount * Math.Max(1, Props.ammoPerRound);
+        public List<StrafingWeapon> Weapons => Props.AllWeapons;
+        public bool HasWeaponChoice => Weapons.Count > 1;
+
+        public int SelectedWeaponIndex
+        {
+            get => Mathf.Clamp(selectedWeaponIndex, 0, Weapons.Count - 1);
+            set => selectedWeaponIndex = Mathf.Clamp(value, 0, Weapons.Count - 1);
+        }
+
+        public StrafingWeapon Weapon => Weapons[SelectedWeaponIndex];
+
+        private int RoundCount => Math.Max(0, Weapon.runLength);
+        public int AmmoCountFor(StrafingWeapon w) =>
+            Math.Max(0, w.runLength) * Math.Max(1, w.ammoPerRound);
+        private int AmmoCount => AmmoCountFor(Weapon);
 
         protected override int RequiredShells => 0;
         protected override OrdinancePattern Pattern => OrdinancePattern.Strafing;
 
         protected override Gizmo BuildStrikeGizmo()
         {
-            var ammoDef = Props.ammoDef;
+            var w = Weapon;
+            var ammoDef = w.ammoDef;
             var ammoLabel = ammoDef != null ? ammoDef.label : "ammo";
             return BuildLaunchGizmo(
-                label: "ROCKET_StrafingRun".Translate(),
-                desc: "ROCKET_StrafingRunDesc".Translate(RoundCount, AmmoCount, ammoLabel),
+                label: HasWeaponChoice
+                    ? "ROCKET_StrafingRunWeapon".Translate(w.LabelCap).Resolve()
+                    : "ROCKET_StrafingRun".Translate().Resolve(),
+                desc: "ROCKET_StrafingRunDesc".Translate(RoundCount, AmmoCount, ammoLabel, w.LabelCap),
                 topIcon: Icon,
                 requiredShells: 0,
                 onClick: _startDelegate ??= () => PickDestinationMap(StartTargeting),
@@ -46,9 +65,10 @@ namespace AirstrikeMod
                 || BombingRunTargeter.Instance.IsTargeting
                 || StrafingRunTargeter.Instance.IsTargeting)
                 return;
-            if (Props.projectileDef == null)
+            var w = Weapon;
+            if (w.projectileDef == null)
             {
-                Messages.Message("[Rockets.Airstrike] Strafing comp has no projectileDef configured.",
+                Messages.Message("[Rockets.Airstrike] Strafing weapon has no projectileDef configured.",
                     MessageTypeDefOf.RejectInput, false);
                 return;
             }
@@ -57,32 +77,32 @@ namespace AirstrikeMod
             if (Current.Game.CurrentMap != destMap)
                 Current.Game.CurrentMap = destMap;
 
-            var cursorIcon = Props.ammoDef?.uiIcon ?? Icon;
+            var cursorIcon = w.ammoDef?.uiIcon ?? Icon;
             SetTargetingCursor("ROCKET_SelectTargetStrafe".Translate());
             CursorLabel.ThirdLine = "ROCKET_HoldShiftMultiTarget".Translate();
 
             var payload = new StrafingPayload
             {
-                projectileDef = Props.projectileDef,
-                leadCells = Props.leadCells,
-                ammoDef = Props.ammoDef,
+                projectileDef = w.projectileDef,
+                leadCells = w.leadCells,
+                ammoDef = w.ammoDef,
                 ammoCount = AmmoCount,
-                fireSound = Props.fireSound,
-                bulletsPerRound = Math.Max(1, Props.bulletsPerRound),
-                spreadCells = Math.Max(0, Props.spreadCells),
-                fireOriginOffset = Math.Max(1, Props.fireOriginOffset),
-                runWidth = Math.Max(1, Props.runWidth),
+                fireSound = w.fireSound,
+                bulletsPerRound = Math.Max(1, w.bulletsPerRound),
+                spreadCells = Math.Max(0, w.spreadCells),
+                fireOriginOffset = Math.Max(1, w.fireOriginOffset),
+                runWidth = Math.Max(1, w.runWidth),
             };
 
-            var maxChain = Props.ammoDef == null
+            var maxChain = w.ammoDef == null
                 ? int.MaxValue
-                : Mathf.Max(1, CountInCargo(Props.ammoDef) / Mathf.Max(1, AmmoCount));
+                : Mathf.Max(1, CountInCargo(w.ammoDef) / Mathf.Max(1, AmmoCount));
 
             StrafingRunTargeter.Instance.BeginTargeting(
                 vehicle: Vehicle,
                 map: destMap,
-                runWidth: Props.runWidth,
-                runLength: Props.runLength,
+                runWidth: w.runWidth,
+                runLength: w.runLength,
                 maxChain: maxChain,
                 action: segments =>
                 {
@@ -97,6 +117,12 @@ namespace AirstrikeMod
                     RestoreCurrentMap(originalMap);
                 },
                 mouseAttachment: cursorIcon);
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref selectedWeaponIndex, nameof(selectedWeaponIndex));
         }
     }
 }
