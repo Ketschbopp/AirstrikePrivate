@@ -8,7 +8,9 @@ A RimWorld 1.7 mod for [Vehicle Framework](https://steamcommunity.com/sharedfile
 
 - **Precision Strike** - one bomb on one cell. Use when you only need to delete one target.
 - **Bombing Run** - a line of bombs along a rotatable rectangle. Spacing is driven by the selected bomb's explosion radius.
-- **Strafing Run** - cannon fire down a long, thin rectangle. Uses a separate cannon ammo type (steel by default), not the bomb pool.
+- **Strafing Run** - fire down a long, thin rectangle. Uses its own ammo, not the bomb pool. The Falcon, Kraken and Apache can switch strafing weapon in the **Payload** tab:
+  - **Cannon** - autocannon rounds (steel by default).
+  - **Missiles** - air-to-ground missiles (`ROCKET_StrafingMissile`, crafted at the machining table) with a smoke trail and motor flame. 200% armor penetration and triple damage against vehicles, but the blast only covers the impact cell. Fewer shots per run (10 on jets, 6 on the Apache).
 
 Each mode is a separate gizmo on the vehicle. A fourth **Select ordinance** gizmo picks which shell/bomb type the Precision and Bombing Run gizmos drop.
 
@@ -41,7 +43,9 @@ If you have more than one map loaded, clicking a strike gizmo opens a menu to pi
 - **Kraken** (`ROCKET_Kraken`) - J-20-style canard-delta jet. Inherits every property of the Falcon (`ParentName="ROCKET_FalconBase"`), including research, cost and compat patches; only the name and art differ.
 - **Spirit** (`ROCKET_Spirit`) - stealth bomber, gated behind Stealth Aircraft. Precision and Bombing Run.
 
-The Falcon, Kraken and Spirit can drop every bomb type on both Precision Strikes and Bombing Runs. A Bombing Run still needs `dropCount` (5) bombs in cargo, so the heaviest bombs need enough cargo capacity to carry five.
+The Falcon, Kraken and Spirit can drop every bomb type on both Precision Strikes and Bombing Runs. A Bombing Run still needs `dropCount` (5) bombs in cargo.
+
+Cargo capacity: Falcon/Kraken 280 kg, Spirit 2400 kg, Apache 600 kg.
 
 **Mod-gated compatibility patches** (no-op if the host mod isn't loaded)
 
@@ -55,6 +59,8 @@ You can hand-edit `1.7/Patches/Vehicle_Patches.xml` to add the gizmos to any oth
 - **Explosive / High-Explosive / Incendiary / Antigrain bomb** (`ROCKET_Bomb_*`) - large air-dropped bombs, craftable at the machining table. Drop in Bombs category.
 - **Blockbuster bomb** (`ROCKET_Bomb_Blockbuster`) - bigger and heavier than the high-explosive bomb: 250 damage, 10.9 radius (HE: 150 / 7.8).
 - **Neum bomb** (`ROCKET_Bomb_Neum`) - made with uranium. Same blast as the high-explosive bomb, plus an EMP pulse and fire from the same detonation.
+- **Smoke bomb** (`ROCKET_Bomb_Smoke`) - bursts into a radius-8 cloud of blinding smoke.
+- **Tactical nuclear bomb** (`ROCKET_Bomb_TacticalNuke`, **requires [Dubs Rimatomics](https://github.com/Dubwise56/Rimatomics)**) - built from a Rimatomics fission warhead. 15% of the warhead's own detonation (radius and damage): 8.25-radius plasma blast for 90 damage / 15 armor penetration, everything within 3.75 cells vaporised, roofs stripped to 8.25 cells, a small mushroom cloud - plus an EMP pulse over the blast radius. Does not cook off when damaged. Lives in `1.7/Mods/Rimatomics`, loaded only when Rimatomics is active.
 - The Bombing Run and Precision Strike can also drop any vanilla mortar shell from cargo.
 
 ## Pilot records
@@ -164,6 +170,31 @@ Vanilla explosions carry a single damage type. Add `AirstrikeMod.SecondaryExplos
 </modExtensions>
 ```
 
+### Strafing weapons: `weapons`
+
+`CompProperties_AirstrikeStrafingRun`'s own fields form the default weapon (named by `defaultWeaponLabel`, default `cannon`). Add a `weapons` list to offer alternatives in the Payload tab; any field left out inherits the comp's value:
+
+```xml
+<weapons>
+    <li>
+        <label>missiles</label>
+        <projectileDef>ROCKET_Bullet_StrafingMissile</projectileDef>
+        <ammoDef>ROCKET_StrafingMissile</ammoDef>
+        <bulletsPerRound>1</bulletsPerRound>
+        <spreadCells>0</spreadCells>
+        <runLength>10</runLength>
+        <runWidth>1</runWidth>
+        <!-- also: ammoPerRound, leadCells, fireOriginOffset, fireSound -->
+    </li>
+</weapons>
+```
+
+`AirstrikeMod.Projectile_AirstrikeMissile` registers its own def as the damage weapon, so Vehicle Framework's `Vehicles.VehicleDamageMultiplierDefModExtension` on the projectile def scales its damage against vehicles.
+
+### Nuclear effects: `NuclearDetonationModExtension`
+
+On a projectile def, adds Rimatomics-style detonation effects to its explosion: `vaporizeRadius` (destroys everything except the attacking aircraft and effects), `roofStripRadius` (removes non-thick roofs), `detonationSound`, `cloudMote` and `cloudScale`.
+
 ### Sounds and visuals provided by the mod
 
 Reference these directly from your patches - they're shipped by Rocket's Airstrike.
@@ -200,14 +231,15 @@ About/                          Mod metadata; depends on VF + Harmony.
     RecordDefs/                 Pilot record defs.
     ResearchDefs/               ROCKET_JetAircraft, ROCKET_StealthAircraft.
     ThingCategoryDefs/          Bombs category.
-    ThingDefs_Items/            Explosive / HE / Blockbuster / Incendiary / Neum / Antigrain bombs.
+    ThingDefs_Items/            Bombs, strafing missile ammo and their projectiles.
+  Mods/Rimatomics/              Tactical nuke + ordinance patch (loaded only with Rimatomics).
     VehicleDefs/                Falcon, Kraken (inherits Falcon), Spirit, Apache + buildables.
   Patches/
     Vehicle_Patches.xml         VVE Warbird & Falcon upgrades (mod-gated).
     LTS_Ammunition_Patch.xml    LTS Ammunition compat (mod-gated).
   Assemblies/                   Shipped DLL.
 Source/AirstrikeMod/            C# source (csproj + .cs files).
-Source/Art/                     Scripts that generate the Kraken sprites and Blockbuster/Neum bomb icons.
+Source/Art/                     Scripts that generate the Kraken sprites, bomb icons and missile textures.
 Languages/English/Keyed/        Translatable strings.
 Textures/                       Vehicle, item, and UI textures.
 Sounds/                         WAV files referenced by SoundDefs.

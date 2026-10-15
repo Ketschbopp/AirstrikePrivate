@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    <!-- Only loaded when Dubs Rimatomics is active (see LoadFolders.xml).
+
+         Built around Rimatomics' FissionWarhead. Rimatomics detonates an armed warhead as
+         a Yield-55 NuclearStrike: everything within 25 cells is vaporised, roofs are
+         stripped to 55 cells, then a 55-radius Bomb_PlasmaToroid blast deals 600 damage
+         with 100 armor penetration. This bomb is 15% of that (radius and damage), plus an
+         EMP pulse over the blast radius:
+
+             blast radius   55   -> 8.25        damage    600 -> 90
+             vaporise core  25   -> 3.75        armor pen 100 -> 15
+             roof strip     55   -> 8.25        cloud     1.2 -> 0.18 scale
+
+         No CompExplosive: like the Rimatomics warhead, it does not cook off when shot. -->
+    <ThingDef ParentName="BombBase">
+        <defName>ROCKET_Bomb_TacticalNuke</defName>
+        <label>tactical nuclear bomb</label>
+        <description>A Rimatomics fission warhead repackaged as an air-dropped bomb and dialled down to a fraction of its strategic yield. The detonation vaporises everything at ground zero, blows the roofs off the surrounding area, scorches it with a plasma blast and releases an electromagnetic pulse that knocks out mechanoids, shields and turrets. The warhead is safed until release: it will not detonate if damaged.</description>
+        <stackLimit>5</stackLimit>
+        <techLevel>Spacer</techLevel>
+        <statBases>
+            <MaxHitPoints>300</MaxHitPoints>
+            <MarketValue>16000</MarketValue>
+            <Mass>60</Mass>
+            <Flammability>0</Flammability>
+            <DeteriorationRate>0.5</DeteriorationRate>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/TacticalNuke</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+            <drawSize>1.3</drawSize>
+        </graphicData>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_TacticalNuke</projectileWhenLoaded>
+        <costList>
+            <FissionWarhead>1</FissionWarhead>
+            <Steel>60</Steel>
+            <ComponentIndustrial>4</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+            <effectWorking>Smith</effectWorking>
+            <soundWorking>Recipe_Machining</soundWorking>
+            <workAmount>6000</workAmount>
+            <workSkill>Crafting</workSkill>
+            <recipeUsers>
+                <li>TableMachining</li>
+            </recipeUsers>
+            <skillRequirements>
+                <Crafting>10</Crafting>
+            </skillRequirements>
+            <researchPrerequisite>AdvancedFabrication</researchPrerequisite>
+            <displayPriority>99</displayPriority>
+        </recipeMaker>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_TacticalNuke</defName>
+        <label>tactical nuclear bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellAntigrainWarhead</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Bomb_PlasmaToroid</damageDef>
+            <damageAmountBase>90</damageAmountBase>
+            <armorPenetrationBase>15</armorPenetrationBase>
+            <speed>30</speed>
+            <explosionRadius>8.25</explosionRadius>
+            <explosionChanceToStartFire>1</explosionChanceToStartFire>
+            <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
+            <postExplosionSpawnThingDef>Filth_Ash</postExplosionSpawnThingDef>
+            <postExplosionSpawnChance>0.6</postExplosionSpawnChance>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>Explosion_GiantBomb</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <preExplosionSpawnSingleThingDef>CraterLarge</preExplosionSpawnSingleThingDef>
+            <explosionEffect>GiantExplosion</explosionEffect>
+            <screenShakeFactor>0.3</screenShakeFactor>
+        </projectile>
+        <modExtensions>
+            <li Class="AirstrikeMod.NuclearDetonationModExtension">
+                <vaporizeRadius>3.75</vaporizeRadius>
+                <roofStripRadius>8.25</roofStripRadius>
+                <detonationSound>nuclearBlastInMap</detonationSound>
+                <cloudMote>Mote_NukeCloud</cloudMote>
+                <cloudScale>0.18</cloudScale>
+            </li>
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>EMP</damageDef>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
+    </ThingDef>
+</Defs>

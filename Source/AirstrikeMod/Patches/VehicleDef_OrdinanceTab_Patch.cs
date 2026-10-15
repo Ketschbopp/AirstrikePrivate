@@ -19,8 +19,10 @@ namespace AirstrikeMod.Patches
             var needsTab = false;
             for (var i = 0; i < __instance.comps.Count; i++)
             {
-                if (__instance.comps[i] is CompProperties_AirstrikeBase
-                    && !(__instance.comps[i] is CompProperties_AirstrikeStrafingRun))
+                // Strafing comps only need the tab when they offer a weapon choice.
+                if (__instance.comps[i] is CompProperties_AirstrikeStrafingRun strafe
+                        ? strafe.weapons is { Count: > 0 }
+                        : __instance.comps[i] is CompProperties_AirstrikeBase)
                 {
                     needsTab = true;
                     break;

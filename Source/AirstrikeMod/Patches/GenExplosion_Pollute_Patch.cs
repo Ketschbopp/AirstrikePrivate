@@ -16,7 +16,10 @@ namespace AirstrikeMod.Patches
             // Projectile defs only: item cook-offs are handled by CompExplosive_Detonate_Patch,
             // so an item def reaching here must not fire its secondaries a second time.
             if (projectile.projectile != null)
+            {
+                NuclearDetonationHelper.Trigger(projectile, center, map);
                 SecondaryExplosionHelper.Trigger(projectile, center, map, radius, instigator);
+            }
         }
     }
 }

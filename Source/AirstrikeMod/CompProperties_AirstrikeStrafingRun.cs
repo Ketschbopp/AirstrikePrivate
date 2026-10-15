@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Verse;
 
 namespace AirstrikeMod
@@ -53,6 +54,37 @@ namespace AirstrikeMod
         /// Cells between each bullet's spawn point and its target cell, along the flight axis.
         /// </summary>
         public int fireOriginOffset = 3;
+
+        /// <summary>
+        /// Label of the default weapon formed by the fields above (shown in the Payload tab
+        /// when <see cref="weapons"/> offers alternatives).
+        /// </summary>
+        public string defaultWeaponLabel = "cannon";
+
+        /// <summary>
+        /// Alternative strafing weapons the player can switch to. Unset fields inherit
+        /// the top-level values.
+        /// </summary>
+        public List<StrafingWeapon> weapons;
+
+        [Unsaved] private List<StrafingWeapon> _resolved;
+
+        /// <summary>Default weapon first, then <see cref="weapons"/>, fully resolved.</summary>
+        public List<StrafingWeapon> AllWeapons
+        {
+            get
+            {
+                if (_resolved != null) return _resolved;
+                _resolved = new List<StrafingWeapon>
+                {
+                    new StrafingWeapon { label = defaultWeaponLabel }.ResolvedAgainst(this),
+                };
+                if (weapons != null)
+                    foreach (var w in weapons)
+                        if (w != null) _resolved.Add(w.ResolvedAgainst(this));
+                return _resolved;
+            }
+        }
 
         public CompProperties_AirstrikeStrafingRun()
         {

@@ -270,6 +270,88 @@
         </modExtensions>
     </ThingDef>
 
+    <!-- Wide blinding smoke screen. -->
+    <ThingDef ParentName="MakeableBombBase">
+        <defName>ROCKET_Bomb_Smoke</defName>
+        <label>smoke bomb</label>
+        <description>An aerial bomb packed with smoke-generating compound instead of explosives. It bursts on impact and blankets a wide area in thick smoke that blocks line of sight, hiding friendly troops and blinding enemy gunners. Bursts when damaged.</description>
+        <stackLimit>25</stackLimit>
+        <statBases>
+            <MarketValue>70</MarketValue>
+            <Mass>5</Mass>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Smoke</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+        </graphicData>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>8</explosiveRadius>
+                <explosiveDamageType>Smoke</explosiveDamageType>
+                <postExplosionGasType>BlindSmoke</postExplosionGasType>
+                <explosiveExpandPerStackcount>0.4</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <wickTicks>30~60</wickTicks>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Bomb_Smoke</projectileWhenLoaded>
+        <costList>
+            <Shell_Smoke>1</Shell_Smoke>
+            <Chemfuel>10</Chemfuel>
+            <Steel>15</Steel>
+        </costList>
+        <recipeMaker>
+            <researchPrerequisite>Fabrication</researchPrerequisite>
+        </recipeMaker>
+    </ThingDef>
+
+    <!-- Ammo for the missile strafing weapon. Not a bomb: never offered as ordinance. -->
+    <ThingDef ParentName="ResourceBase">
+        <defName>ROCKET_StrafingMissile</defName>
+        <label>air-to-ground missile</label>
+        <description>A small guided air-to-ground missile with a shaped-charge penetrator warhead. Loaded into aircraft cargo and fired during strafing runs. The warhead punches through heavy armor and is devastating against vehicles, but its blast covers barely more than the cell it hits.</description>
+        <soundInteract>Metal_Drop</soundInteract>
+        <soundDrop>Standard_Drop</soundDrop>
+        <stackLimit>25</stackLimit>
+        <techLevel>Industrial</techLevel>
+        <statBases>
+            <MaxHitPoints>60</MaxHitPoints>
+            <MarketValue>45</MarketValue>
+            <Mass>2.5</Mass>
+            <Flammability>0.5</Flammability>
+            <DeteriorationRate>1.0</DeteriorationRate>
+        </statBases>
+        <graphicData>
+            <texPath>Things/Item/Resource/Missile/StrafingMissile</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+        </graphicData>
+        <thingCategories>
+            <li>ROCKET_Bombs</li>
+        </thingCategories>
+        <costList>
+            <Steel>12</Steel>
+            <Chemfuel>8</Chemfuel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <recipeMaker>
+            <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+            <effectWorking>Cook</effectWorking>
+            <soundWorking>Recipe_Machining</soundWorking>
+            <workAmount>900</workAmount>
+            <productCount>2</productCount>
+            <targetCountAdjustment>10</targetCountAdjustment>
+            <workSkill>Crafting</workSkill>
+            <recipeUsers>
+                <li>TableMachining</li>
+            </recipeUsers>
+            <skillRequirements>
+                <Crafting>5</Crafting>
+            </skillRequirements>
+            <researchPrerequisite>Fabrication</researchPrerequisite>
+            <displayPriority>95</displayPriority>
+        </recipeMaker>
+    </ThingDef>
+
     <ThingDef ParentName="BaseBullet">
         <defName>ROCKET_Bullet_Bomb_Explosive</defName>
         <label>explosive bomb</label>
@@ -435,6 +517,62 @@
                         <damageDef>EMP</damageDef>
                     </li>
                 </explosions>
+            </li>
+        </modExtensions>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Bomb_Smoke</defName>
+        <label>smoke bomb</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellHighExplosive</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Smoke</damageDef>
+            <speed>30</speed>
+            <explosionRadius>8</explosionRadius>
+            <postExplosionGasType>BlindSmoke</postExplosionGasType>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+        </projectile>
+    </ThingDef>
+
+    <!-- Strafing missile: very heavy penetration, triple damage to vehicles (VF
+         multiplier, applied because the missile registers itself as the weapon),
+         and a blast that only covers the impact cell. -->
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_StrafingMissile</defName>
+        <label>air-to-ground missile</label>
+        <description>Shaped-charge air-to-ground missiles. Very heavy armor penetration and triple damage against vehicles, but the blast only covers the cell it hits.</description>
+        <graphicData>
+            <texPath>Things/Projectile/ROCKET_Missile</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>Transparent</shaderType>
+            <drawSize>1.3</drawSize>
+        </graphicData>
+        <thingClass>AirstrikeMod.Projectile_AirstrikeMissile</thingClass>
+        <projectile>
+            <damageDef>Bomb</damageDef>
+            <damageAmountBase>80</damageAmountBase>
+            <!-- 200%: ignores almost any armor. -->
+            <armorPenetrationBase>2.0</armorPenetrationBase>
+            <stoppingPower>3</stoppingPower>
+            <speed>40</speed>
+            <!-- Under 1: the blast only touches the impact cell. -->
+            <explosionRadius>0.9</explosionRadius>
+            <flyOverhead>false</flyOverhead>
+            <soundExplode>MortarBomb_Explode</soundExplode>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <screenShakeFactor>0.05</screenShakeFactor>
+        </projectile>
+        <modExtensions>
+            <li Class="Vehicles.VehicleDamageMultiplierDefModExtension">
+                <multiplier>3</multiplier>
             </li>
         </modExtensions>
     </ThingDef>

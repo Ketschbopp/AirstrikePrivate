@@ -35,7 +35,7 @@ namespace AirstrikeMod
                 damType: pp.damageDef ?? DamageDefOf.Bomb,
                 instigator: instigator,
                 damAmount: pp.GetDamageAmount((Thing)null),
-                armorPenetration: -1f,
+                armorPenetration: pp.GetArmorPenetration(), // same as Projectile_Explosive.Explode
                 explosionSound: pp.soundExplode,
                 weapon: null,
                 projectile: projectileDef,

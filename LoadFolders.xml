@@ -3,5 +3,6 @@
     <v1.7>
         <li>/</li>
         <li>1.7</li>
+        <li IfModActive="Dubwise.Rimatomics">1.7/Mods/Rimatomics</li>
     </v1.7>
 </LoadFolders>

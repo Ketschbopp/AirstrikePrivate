@@ -14,6 +14,8 @@ SRC = ROOT / "Textures/Things/Item/Resource/Bomb/HighExplosive"
 VARIANTS = {
     "Blockbuster": ((0.62, 0.62, 0.66), (205, 40, 30)),   # dark steel, red band
     "Neum": ((0.78, 0.98, 0.80), (40, 230, 240)),         # uranium-green body, EMP-cyan band
+    "Smoke": ((1.30, 1.30, 1.30), (235, 235, 235)),       # pale grey body, white band
+    "TacticalNuke": ((1.25, 1.18, 0.80), (40, 40, 40)),   # warning-yellow body, black band
 }
 
 

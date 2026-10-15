@@ -16,6 +16,8 @@
     <ROCKET_TabOrdinance_ShowAll>Show all</ROCKET_TabOrdinance_ShowAll>
     <ROCKET_OrdinanceNone>None</ROCKET_OrdinanceNone>
     <ROCKET_OrdinanceCount>{0} (×{1})</ROCKET_OrdinanceCount>
+    <ROCKET_TabOrdinance_StrafingHeader>Strafing weapon</ROCKET_TabOrdinance_StrafingHeader>
+    <ROCKET_StrafingWeaponRow>{0} ({1} {3}, {2} per run)</ROCKET_StrafingWeaponRow>
 
     <!-- Tab section fallback header when a ThingDef has no thingCategories -->
     <ROCKET_Category_Uncategorized>Uncategorized</ROCKET_Category_Uncategorized>
@@ -26,7 +28,8 @@
     <ROCKET_BombingRun>Bombing Run</ROCKET_BombingRun>
     <ROCKET_BombingRunDesc>Make a bombing pass dropping {0} rounds along a chosen line.</ROCKET_BombingRunDesc>
     <ROCKET_StrafingRun>Strafing Run</ROCKET_StrafingRun>
-    <ROCKET_StrafingRunDesc>Strafe a chosen line. Fires {0} cannon rounds, consuming {1} {2} from cargo.</ROCKET_StrafingRunDesc>
+    <ROCKET_StrafingRunDesc>Strafe a chosen line with {3}. Fires {0} rounds, consuming {1} {2} from cargo. Switch weapons in the Payload tab.</ROCKET_StrafingRunDesc>
+    <ROCKET_StrafingRunWeapon>Strafing Run ({0})</ROCKET_StrafingRunWeapon>
     <ROCKET_LocalFlight>Local Flight</ROCKET_LocalFlight>
     <ROCKET_LocalFlightDesc>Ferry the vehicle to a chosen cell on this map. Rises in place, transits at altitude, and descends at the destination.</ROCKET_LocalFlightDesc>
     <ROCKET_HoldShiftMultiTarget>Hold SHIFT to select multiple targets</ROCKET_HoldShiftMultiTarget>

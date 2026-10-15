@@ -53,12 +53,25 @@ namespace AirstrikeMod
             return null;
         }
 
-        public override bool IsVisible => FindOrdinanceComp() != null;
+        private CompAirstrikeStrafingRun FindStrafingChoiceComp()
+        {
+            var v = Vehicle;
+            if (v == null) return null;
+            var comps = v.AllComps;
+            for (var i = 0; i < comps.Count; i++)
+                if (comps[i] is CompAirstrikeStrafingRun s && s.HasWeaponChoice)
+                    return s;
+            return null;
+        }
+
+        public override bool IsVisible =>
+            FindOrdinanceComp() != null || FindStrafingChoiceComp() != null;
 
         protected override void FillTab()
         {
             var comp = FindOrdinanceComp();
-            if (comp == null) return;
+            var strafe = FindStrafingChoiceComp();
+            if (comp == null && strafe == null) return;
 
             using var textBlock = new TextBlock(GameFont.Small);
 
@@ -66,15 +79,21 @@ namespace AirstrikeMod
             Widgets.BeginGroup(outer);
 
             var curY = 0f;
-            DrawToggles(ref curY, outer.width, comp);
+            if (comp != null)
+                DrawToggles(ref curY, outer.width, comp);
 
             var outRect = new Rect(0f, curY, outer.width, outer.height - curY);
             var viewRect = new Rect(0f, 0f, outer.width - 16f, scrollViewHeight);
             Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect, true);
 
             var rowY = 0f;
-            DrawNoneRow(ref rowY, viewRect.width, comp);
-            DrawCategorySections(ref rowY, viewRect.width, comp);
+            if (comp != null)
+            {
+                DrawNoneRow(ref rowY, viewRect.width, comp);
+                DrawCategorySections(ref rowY, viewRect.width, comp);
+            }
+            if (strafe != null)
+                DrawStrafingWeapons(ref rowY, viewRect.width, strafe);
 
             if (Event.current.type == EventType.Layout)
                 scrollViewHeight = rowY + 4f;
@@ -266,6 +285,46 @@ namespace AirstrikeMod
                 comp.SelectedOrdinance = thing;
             }
             y += ROW_HEIGHT;
+        }
+
+        private static void DrawStrafingWeapons(ref float y, float width, CompAirstrikeStrafingRun strafe)
+        {
+            y += 6f;
+            Widgets.ListSeparator(ref y, width, "ROCKET_TabOrdinance_StrafingHeader".Translate());
+            var weapons = strafe.Weapons;
+            for (var i = 0; i < weapons.Count; i++)
+            {
+                var w = weapons[i];
+                var isSelected = strafe.SelectedWeaponIndex == i;
+                var rect = new Rect(0f, y, width, ROW_HEIGHT);
+                DrawRowHighlight(rect, isSelected);
+                DrawRadio(rect, isSelected);
+
+                var iconX = RADIO_COLUMN_WIDTH + 8f;
+                var iconRect = new Rect(iconX, y + (ROW_HEIGHT - ICON_SIZE) * 0.5f, ICON_SIZE, ICON_SIZE);
+                var icon = w.ammoDef?.uiIcon;
+                if (icon != null) Widgets.DrawTextureFitted(iconRect, icon, 1f);
+
+                var labelX = iconRect.xMax + 6f;
+                var labelRect = new Rect(labelX, y, width - labelX - 4f, ROW_HEIGHT);
+                var have = w.ammoDef != null ? strafe.CountInCargo(w.ammoDef) : 0;
+                var label = w.ammoDef != null
+                    ? "ROCKET_StrafingWeaponRow".Translate(w.LabelCap, have, strafe.AmmoCountFor(w),
+                        w.ammoDef.label).Resolve()
+                    : w.LabelCap;
+                using (new TextBlock(TextAnchor.MiddleLeft))
+                    Widgets.Label(labelRect, label);
+
+                var tip = w.projectileDef?.description;
+                if (!string.IsNullOrEmpty(tip)) TooltipHandler.TipRegion(rect, tip);
+
+                if (!isSelected && Widgets.ButtonInvisible(rect))
+                {
+                    SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera();
+                    strafe.SelectedWeaponIndex = i;
+                }
+                y += ROW_HEIGHT;
+            }
         }
 
         private static void DrawRowHighlight(Rect rect, bool isSelected)
