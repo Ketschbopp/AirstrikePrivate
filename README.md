@@ -53,6 +53,7 @@ If you have more than one map loaded, clicking a strike gizmo opens a menu to pi
   - **Weapons**: bomb damage multiplier (25-300%, also scales CE armour penetration), bomb and strafing scatter multiplier (0% = pinpoint), strafing ammo use (0% = free), allow nuclear weapons (off hides the URDAM and tactical nuke from the payload picker), and white phosphorus lingering burn patches on/off.
   - **Reset to defaults** button.
 - **Debug** tab: draw the spline flight path in white for tuning.
+- **Debug actions**: in dev mode, the debug menu's General > Explosion... list gains a `Rocket_<name>` entry for every explosive projectile in the mod (bombs, missiles, the WP shell, the tactical nuke and URDAM when Rimatomics is loaded). Click a cell and it detonates there instantly with all of its effects.
 
 ## Vehicles that get the gizmos
 
@@ -97,6 +98,8 @@ The mod works on vanilla and, optionally, with [Combat Extended](https://github.
 - **Tactical nuclear bomb** (`ROCKET_Bomb_TacticalNuke`, **requires [Dubs Rimatomics](https://github.com/Dubwise56/Rimatomics)**) - built from a Rimatomics fission warhead. Scaled to a 30-cell blast (about 54.5% of the warhead's own detonation, radius and damage alike): 30-radius plasma blast for 327 damage / 54.5 armor penetration, everything within 13.6 cells vaporised, roofs stripped to 30 cells, a mushroom cloud - plus an EMP pulse over the blast radius. Does not cook off when damaged. Lives in `1.7/Mods/Rimatomics`, loaded only when Rimatomics is active.
 - **URDAM** (`ROCKET_Bomb_URDAM`, **requires Dubs Rimatomics**) - a JDAM-style guided nuke with the tactical nuke's original numbers: 8.25-radius plasma blast for 90 damage / 15 armor penetration, 3.75-cell vaporise core, roofs stripped to 8.25 cells, a small mushroom cloud and EMP. Its guidance kit (`AirstrikeMod.GuidedBombModExtension`, `scatterMultiplier` 0) ignores the aircraft's scatter, so it always lands on the aimed cell.
 - The Bombing Run and Precision Strike can also drop any vanilla mortar shell from cargo.
+- **White phosphorus shell** (`ROCKET_Shell_WhitePhosphorus`) - a mortar shell version of the white phosphorus bomb (Mortars research, machining table): the same burst, sticky fire, lingering burning phosphorus and smoke screen over a 5.9 radius. Fits any vanilla mortar. With Combat Extended it has no recipe, because CE mortars only fire CE ammo.
+- **IEDs** (`ROCKET_IED_*`, Security tab, IEDs research plus the bomb's own research) - one per bomb except the tactical nuke: explosive, high-explosive, incendiary, antigrain, blockbuster, neum, smoke, white phosphorus, bunker buster, toxic gas (Biotech) and URDAM (Rimatomics). Built from one bomb, 10 steel and 1 component. Walking over one doesn't set it off; press **Detonate** (select several to blow them together) and it explodes with the bomb's own projectile and all of its effects. Heavy damage lights a short wick, and destroying it sets it off at once. Shows its blast radius while placing and when selected. The URDAM IED can't be detonated while nuclear weapons are disabled in the settings (`AirstrikeMod.CompProperties_RemoteDetonator`, `bomb` field).
 
 ## Pilot records
 

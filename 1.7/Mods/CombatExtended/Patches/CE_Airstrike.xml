@@ -207,4 +207,11 @@
             <Bulk>4</Bulk>
         </value>
     </Operation>
+
+    <!-- ===================== White phosphorus mortar shell ===================== -->
+    <!-- CE mortars only fire CE ammo sets, so the vanilla-style WP shell can't be loaded.
+         Don't offer a recipe for it. -->
+    <Operation Class="PatchOperationRemove">
+        <xpath>Defs/ThingDef[defName="ROCKET_Shell_WhitePhosphorus"]/recipeMaker</xpath>
+    </Operation>
 </Patch>

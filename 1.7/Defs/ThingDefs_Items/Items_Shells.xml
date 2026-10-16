@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <!-- White phosphorus mortar shell: a smaller version of the white phosphorus bomb that
+         fits any mortar (MortarShells category). Same burst, fragments, sticky fire,
+         lingering burning phosphorus and smoke screen, over a 5.9 radius instead of 12. -->
+    <ThingDef ParentName="ResourceBase">
+        <defName>ROCKET_Shell_WhitePhosphorus</defName>
+        <label>white phosphorus shell</label>
+        <description>A mortar shell filled with white phosphorus. It bursts in a white flash and throws burning fragments trailing white smoke over a smaller area than the aerial white phosphorus bomb. The phosphorus clings and keeps burning: it sets people alight, causes deep burns, and splashes on the ground keep burning on any surface until they burn out. Leaves a white smoke screen; its fumes are toxic. Can be fired from mortars. Bursts when damaged.</description>
+        <soundInteract>Metal_Drop</soundInteract>
+        <soundDrop>Standard_Drop</soundDrop>
+        <tickerType>Normal</tickerType>
+        <stackLimit>25</stackLimit>
+        <techLevel>Industrial</techLevel>
+        <graphicData>
+            <texPath>Things/Item/Resource/Shell/WhitePhosphorus</texPath>
+            <graphicClass>Graphic_StackCount</graphicClass>
+        </graphicData>
+        <statBases>
+            <MaxHitPoints>60</MaxHitPoints>
+            <MarketValue>65</MarketValue>
+            <Mass>1.25</Mass>
+            <Flammability>1.0</Flammability>
+            <DeteriorationRate>0</DeteriorationRate>
+        </statBases>
+        <thingCategories>
+            <li>MortarShells</li>
+        </thingCategories>
+        <tradeTags>
+            <li>MortarShell</li>
+        </tradeTags>
+        <comps>
+            <li Class="CompProperties_Explosive">
+                <explosiveRadius>5.9</explosiveRadius>
+                <explosiveDamageType>Flame</explosiveDamageType>
+                <chanceToStartFire>1</chanceToStartFire>
+                <postExplosionGasType>ToxGas</postExplosionGasType>
+                <explosiveExpandPerStackcount>0.2</explosiveExpandPerStackcount>
+                <startWickHitPointsPercent>0.7</startWickHitPointsPercent>
+                <wickTicks>30~60</wickTicks>
+            </li>
+        </comps>
+        <projectileWhenLoaded>ROCKET_Bullet_Shell_WhitePhosphorus</projectileWhenLoaded>
+        <costList>
+            <Steel>15</Steel>
+            <Chemfuel>20</Chemfuel>
+        </costList>
+        <recipeMaker>
+            <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+            <effectWorking>Cook</effectWorking>
+            <soundWorking>Recipe_Machining</soundWorking>
+            <workAmount>800</workAmount>
+            <targetCountAdjustment>5</targetCountAdjustment>
+            <workSkill>Crafting</workSkill>
+            <recipeUsers>
+                <li>TableMachining</li>
+            </recipeUsers>
+            <skillRequirements>
+                <Crafting>4</Crafting>
+            </skillRequirements>
+            <researchPrerequisite>Mortars</researchPrerequisite>
+            <displayPriority>95</displayPriority>
+        </recipeMaker>
+        <modExtensions>
+            <li Class="AirstrikeMod.WhitePhosphorusModExtension">
+                <fragmentCount>12</fragmentCount>
+                <fireSize>0.8</fireSize>
+                <fragmentDamage>12</fragmentDamage>
+                <stickyChance>0.5</stickyChance>
+                <stickyRadiusFactor>0.6</stickyRadiusFactor>
+                <stickyFireSize>0.6</stickyFireSize>
+                <burnPatchChance>0.6</burnPatchChance>
+                <burnPatchTicks>1200~2400</burnPatchTicks>
+                <burnPatchDamage>5</burnPatchDamage>
+            </li>
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>Smoke</damageDef>
+                        <gasType>BlindSmoke</gasType>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
+    </ThingDef>
+
+    <ThingDef ParentName="BaseBullet">
+        <defName>ROCKET_Bullet_Shell_WhitePhosphorus</defName>
+        <label>white phosphorus shell</label>
+        <graphicData>
+            <texPath>Things/Projectile/ShellIncendiary</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+            <shaderType>TransparentPostLight</shaderType>
+        </graphicData>
+        <thingClass>Projectile_Explosive</thingClass>
+        <projectile>
+            <damageDef>Flame</damageDef>
+            <damageAmountBase>25</damageAmountBase>
+            <speed>41</speed>
+            <explosionRadius>5.9</explosionRadius>
+            <explosionChanceToStartFire>1</explosionChanceToStartFire>
+            <postExplosionGasType>ToxGas</postExplosionGasType>
+            <flyOverhead>true</flyOverhead>
+            <soundHitThickRoof>Artillery_HitThickRoof</soundHitThickRoof>
+            <soundExplode>MortarIncendiary_Explode</soundExplode>
+            <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
+            <soundAmbient>MortarRound_Ambient</soundAmbient>
+            <ai_IsIncendiary>true</ai_IsIncendiary>
+        </projectile>
+        <modExtensions>
+            <li Class="AirstrikeMod.WhitePhosphorusModExtension">
+                <fragmentCount>14</fragmentCount>
+                <fireSize>0.8</fireSize>
+                <fragmentDamage>12</fragmentDamage>
+                <stickyChance>0.5</stickyChance>
+                <stickyRadiusFactor>0.6</stickyRadiusFactor>
+                <stickyFireSize>0.6</stickyFireSize>
+                <burnPatchChance>0.6</burnPatchChance>
+                <burnPatchTicks>1200~2400</burnPatchTicks>
+                <burnPatchDamage>5</burnPatchDamage>
+            </li>
+            <li Class="AirstrikeMod.SecondaryExplosionsModExtension">
+                <explosions>
+                    <li>
+                        <damageDef>Smoke</damageDef>
+                        <gasType>BlindSmoke</gasType>
+                    </li>
+                </explosions>
+            </li>
+        </modExtensions>
+    </ThingDef>
+
+</Defs>
