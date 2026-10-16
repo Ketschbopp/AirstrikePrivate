@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <!-- IED built from one of the mod's bombs: no pressure trigger, set off remotely with
+         the Detonate button (AirstrikeMod.CompRemoteDetonator). It explodes with the bomb's
+         own projectile, so it has every effect the bomb has when dropped from the air. -->
+    <ThingDef Name="ROCKET_IEDBase" ParentName="BuildingBase" Abstract="True">
+        <thingClass>Building</thingClass>
+        <category>Building</category>
+        <graphicData>
+            <graphicClass>Graphic_Single</graphicClass>
+            <drawSize>1.3</drawSize>
+            <damageData>
+                <rect>(0.2,0.2,0.6,0.6)</rect>
+            </damageData>
+        </graphicData>
+        <altitudeLayer>Building</altitudeLayer>
+        <passability>Standable</passability>
+        <fillPercent>0.15</fillPercent>
+        <tickerType>Normal</tickerType>
+        <rotatable>false</rotatable>
+        <statBases>
+            <MaxHitPoints>80</MaxHitPoints>
+            <WorkToBuild>1500</WorkToBuild>
+            <Flammability>1</Flammability>
+            <Beauty>-4</Beauty>
+            <Mass>10</Mass>
+        </statBases>
+        <designationCategory>Security</designationCategory>
+        <uiOrder>2050</uiOrder>
+        <constructionSkillPrerequisite>3</constructionSkillPrerequisite>
+        <minifiedDef>MinifiedThing</minifiedDef>
+        <thingCategories>
+            <li>BuildingsSecurity</li>
+        </thingCategories>
+        <building>
+            <ai_chillDestination>false</ai_chillDestination>
+            <expandHomeArea>false</expandHomeArea>
+        </building>
+        <placeWorkers>
+            <li>AirstrikeMod.PlaceWorker_ShowIEDRadius</li>
+        </placeWorkers>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Explosive</defName>
+        <label>explosive IED</label>
+        <description>An improvised explosive device built around an explosive bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Explosive/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Explosive>1</ROCKET_Bomb_Explosive>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Explosive</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_HighExplosive</defName>
+        <label>high-explosive IED</label>
+        <description>An improvised explosive device built around a high-explosive bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/HighExplosive/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_HighExplosive>1</ROCKET_Bomb_HighExplosive>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_HighExplosive</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Incendiary</defName>
+        <label>incendiary IED</label>
+        <description>An improvised explosive device built around an incendiary bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Incendiary/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Incendiary>1</ROCKET_Bomb_Incendiary>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Incendiary</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Antigrain</defName>
+        <label>antigrain IED</label>
+        <description>An improvised explosive device built around an antigrain bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Antigrain/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Antigrain>1</ROCKET_Bomb_Antigrain>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>AdvancedFabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Antigrain</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Blockbuster</defName>
+        <label>blockbuster IED</label>
+        <description>An improvised explosive device built around a blockbuster bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Blockbuster/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Blockbuster>1</ROCKET_Bomb_Blockbuster>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Blockbuster</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Neum</defName>
+        <label>neum IED</label>
+        <description>An improvised explosive device built around a neum bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Neum/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Neum>1</ROCKET_Bomb_Neum>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Neum</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_Smoke</defName>
+        <label>smoke IED</label>
+        <description>An improvised explosive device built around a smoke bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/Smoke/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_Smoke>1</ROCKET_Bomb_Smoke>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_Smoke</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_WhitePhosphorus</defName>
+        <label>white phosphorus IED</label>
+        <description>An improvised explosive device built around a white phosphorus bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/WhitePhosphorus/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_WhitePhosphorus>1</ROCKET_Bomb_WhitePhosphorus>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_WhitePhosphorus</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_BunkerBuster</defName>
+        <label>bunker buster IED</label>
+        <description>An improvised explosive device built around a bunker buster, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/BunkerBuster/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_BunkerBuster>1</ROCKET_Bomb_BunkerBuster>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>AdvancedFabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_BunkerBuster</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+</Defs>

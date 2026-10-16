@@ -12,7 +12,7 @@
     <ROCKET_StayAirborneDefaultDesc>Default for the "Stay airborne" toggle on aircraft that can hover. Aircraft whose toggle you already changed keep their own setting.</ROCKET_StayAirborneDefaultDesc>
     <ROCKET_SettingsWeaponsHeader>Weapons</ROCKET_SettingsWeaponsHeader>
     <ROCKET_BombDamageLabel>Bomb damage: {0}%</ROCKET_BombDamageLabel>
-    <ROCKET_BombDamageDesc>Multiplies the damage (and, with Combat Extended, armor penetration) of every bomb dropped from an aircraft. Blast radius is unchanged.</ROCKET_BombDamageDesc>
+    <ROCKET_BombDamageDesc>Multiplies the damage (and, with Combat Extended, armor penetration) of every bomb dropped from an aircraft or set off as an IED. Blast radius is unchanged.</ROCKET_BombDamageDesc>
     <ROCKET_ScatterLabel>Bomb and strafing scatter: {0}%</ROCKET_ScatterLabel>
     <ROCKET_ScatterDesc>Multiplies how far bombs and strafing rounds land from their aim point. 0% is pinpoint accurate.</ROCKET_ScatterDesc>
     <ROCKET_StrafingAmmoLabel>Strafing ammo use: {0}%</ROCKET_StrafingAmmoLabel>
@@ -120,4 +120,9 @@
     <ROCKET_NotWhileInFlight>Not available while the aircraft is in flight. Wait until it is hovering or has landed.</ROCKET_NotWhileInFlight>
     <ROCKET_SwitchWeapon>Weapon: {0}</ROCKET_SwitchWeapon>
     <ROCKET_SwitchWeaponDesc>Switch the strafing weapon used for the next run.</ROCKET_SwitchWeaponDesc>
+    <!-- Remote-detonated IEDs -->
+    <ROCKET_IEDDetonate>Detonate</ROCKET_IEDDetonate>
+    <ROCKET_IEDDetonateDesc>Set off this IED now. It explodes like a {0} dropped from the air. Select several IEDs to detonate them together.</ROCKET_IEDDetonateDesc>
+    <ROCKET_IEDNuclearDisabled>Nuclear weapons are disabled in the mod settings.</ROCKET_IEDNuclearDisabled>
+    <ROCKET_IEDWickLit>Wick lit!</ROCKET_IEDWickLit>
 </LanguageData>

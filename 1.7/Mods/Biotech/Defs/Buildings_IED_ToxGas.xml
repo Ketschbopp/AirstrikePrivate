@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_ToxGas</defName>
+        <label>toxic gas IED</label>
+        <description>An improvised explosive device built around a toxic gas bomb, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/ToxGas/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_ToxGas>1</ROCKET_Bomb_ToxGas>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>Fabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_ToxGas</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+</Defs>

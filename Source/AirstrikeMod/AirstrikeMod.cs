@@ -9,9 +9,11 @@ namespace AirstrikeMod
     public class AirstrikeMod : Mod
     {
         public static AirstrikeModSettings Settings;
+        public static ModContentPack Content;
 
         public AirstrikeMod(ModContentPack content) : base(content)
         {
+            Content = content;
             Settings = GetSettings<AirstrikeModSettings>();
 
             var harmony = new Harmony("Rockets.Airstrike");

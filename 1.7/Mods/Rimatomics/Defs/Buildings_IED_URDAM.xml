@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <ThingDef ParentName="ROCKET_IEDBase">
+        <defName>ROCKET_IED_URDAM</defName>
+        <label>URDAM IED</label>
+        <description>An improvised explosive device built around an URDAM, wired for remote detonation. It isn't set off by anyone walking over it: press Detonate to blow it from anywhere on the map, and it explodes exactly like the bomb dropped from the air. Heavy damage lights its wick, and destroying it sets it off at once.</description>
+        <graphicData>
+            <texPath>Things/Item/Resource/Bomb/URDAM/Bomb_a</texPath>
+        </graphicData>
+        <costList>
+            <ROCKET_Bomb_URDAM>1</ROCKET_Bomb_URDAM>
+            <Steel>10</Steel>
+            <ComponentIndustrial>1</ComponentIndustrial>
+        </costList>
+        <researchPrerequisites>
+            <li>IEDs</li>
+            <li>AdvancedFabrication</li>
+        </researchPrerequisites>
+        <comps>
+            <li Class="AirstrikeMod.CompProperties_RemoteDetonator">
+                <bomb>ROCKET_Bomb_URDAM</bomb>
+            </li>
+        </comps>
+    </ThingDef>
+
+</Defs>
